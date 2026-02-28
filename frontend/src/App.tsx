@@ -21,17 +21,17 @@ const HELP_DATA: Record<string, HelpTopic> = {
     genres: {
         title: "Genres",
         description: "Genres define the foundational sound and instrumental arrangement of your track. Suno understands a wide variety of global genres. Combining them can lead to unique fusion styles.",
-        url: "https://www.suno.wiki/faq/making-music/style-and-genres/"
+        url: "https://help.suno.com/"
     },
     metal: {
         title: "Metal Subgenres",
         description: "Highly specific subgenres in Metal dictate the vocal style (e.g. growls vs clean singing), guitar tuning, and drumming patterns. For example, 'Deathcore' yields a much heavier, breakdown-oriented track than standard 'Heavy Metal'.",
-        url: "https://www.suno.wiki/faq/making-music/style-and-genres/"
+        url: "https://help.suno.com/"
     },
     tags: {
         title: "Structure Tags",
         description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Tempo: Fast] for momentary changes.",
-        url: "https://www.suno.wiki/faq/making-music/metatags/"
+        url: "https://help.suno.com/"
     }
 };
 
@@ -194,7 +194,7 @@ function App() {
                             <h2>{HELP_DATA[activeHelp].title}</h2>
                             <p>{HELP_DATA[activeHelp].description}</p>
                             <a href={HELP_DATA[activeHelp].url} target="_blank" rel="noopener noreferrer" className="modal-link">
-                                [ Official Suno Wiki Guide ]
+                                [ Official Suno Help ]
                             </a>
                         </div>
                     </div>
