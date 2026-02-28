@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './App.css';
+
+interface PromptResponse {
+    genres: string;
+    styles: string;
+    lyrics_formatted: string;
+}
 
 function App() {
     const [text, setText] = useState('');
-    const [result, setResult] = useState(null);
+    const [result, setResult] = useState<PromptResponse | null>(null);
 
     const handleGenerate = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/v1/generate', {
+            const response = await fetch('http://localhost:13050/api/v1/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text })
             });
-            const data = await response.json();
+            const data: PromptResponse = await response.json();
             setResult(data);
         } catch (error) {
             console.error("Error generating prompt:", error);

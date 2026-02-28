@@ -22,4 +22,4 @@ docker-build:
 	docker build -t suno-prompt-gen .
 
 docker-run:
-	docker run -p 8000:8000 suno-prompt-gen
+	docker run -p 13050:13050 suno-prompt-gen

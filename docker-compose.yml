@@ -6,6 +6,6 @@ services:
     container_name: suno-prompt-gen
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "13050:13050"
     env_file:
       - .env
