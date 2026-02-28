@@ -23,9 +23,9 @@
     linear-gradient(90deg, rgba(255, 0, 255, 0.4) 2px, transparent 2px);
   background-size: 60px 60px;
   background-position: center;
-  /* Rotate on X for the Star Wars depth, and Z to angle it diagonally */
-  transform: perspective(600px) rotateX(70deg) rotateZ(-30deg) translateY(-200px);
-  transform-origin: center center;
+  /* Reduced rotateX to flatten it slightly and translateY up to hit the ~50% mark */
+  transform: perspective(800px) rotateX(55deg) rotateZ(-30deg) translateY(-50vh);
+  transform-origin: center top;
   animation: grid-move-diagonal 12s linear infinite;
   z-index: -2;
   pointer-events: none;
