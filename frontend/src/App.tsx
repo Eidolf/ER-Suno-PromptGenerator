@@ -12,11 +12,12 @@ interface HelpTopic {
     description: string;
     url: string;
     communityUrl?: string;
+    tutorialUrl?: string;
 }
 
 const GENRES = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic'];
 const METAL_SUBGENRES = ['Heavy Metal', 'Thrash Metal', 'Death Metal', 'Black Metal', 'Power Metal', 'Doom Metal', 'Symphonic Metal', 'Progressive Metal', 'Nu Metal', 'Folk Metal', 'Metalcore', 'Deathcore', 'Industrial Metal', 'Groove Metal', 'Metal'];
-const TAGS = ['[Verse]', '[Chorus]', '[Tempo: Fast]', '[Tempo: Slow]', '[Tempo: Upbeat]', '[Style: Acoustic]', '[Style: Epic]', '[Style: Intimate]', '[Vocal: Female]', '[Vocal: Male]', '[Instrumental]', '[Drop]', '[Build-up]'];
+const TAGS = ['[Intro]', '[Verse]', '[Pre-Chorus]', '[Chorus]', '[Bridge]', '[Guitar Solo]', '[Drop]', '[Build-up]', '[Breakdown]', '[Outro]', '[Tempo: Fast]', '[Tempo: Slow]', '[Tempo: Upbeat]', '[Style: Acoustic]', '[Style: Epic]', '[Style: Intimate]', '[Vocal: Female]', '[Vocal: Male]', '[Instrumental]'];
 
 const HELP_DATA: Record<string, HelpTopic> = {
     genres: {
@@ -35,7 +36,8 @@ const HELP_DATA: Record<string, HelpTopic> = {
         title: "Structure Tags",
         description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Tempo: Fast] for momentary changes.",
         url: "https://help.suno.com/",
-        communityUrl: "https://sunoaiwiki.com/resources/2024-05-13-list-of-metatags/"
+        communityUrl: "https://sunoaiwiki.com/resources/2024-05-13-list-of-metatags/",
+        tutorialUrl: "https://sunometatagcreator.com/metatags-guide"
     }
 };
 
@@ -204,6 +206,11 @@ function App() {
                                 {HELP_DATA[activeHelp].communityUrl && (
                                     <a href={HELP_DATA[activeHelp].communityUrl} target="_blank" rel="noopener noreferrer" className="modal-link community-link">
                                         [ Community Suno Wiki ]
+                                    </a>
+                                )}
+                                {HELP_DATA[activeHelp].tutorialUrl && (
+                                    <a href={HELP_DATA[activeHelp].tutorialUrl} target="_blank" rel="noopener noreferrer" className="modal-link tutorial-link">
+                                        [ Meta Tag Creator Guide ]
                                     </a>
                                 )}
                             </div>

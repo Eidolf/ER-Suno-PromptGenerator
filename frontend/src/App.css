@@ -427,3 +427,11 @@ pre {
 .community-link:hover {
   text-shadow: 0 0 10px #0cebeb;
 }
+
+.tutorial-link {
+  color: #39ff14;
+}
+
+.tutorial-link:hover {
+  text-shadow: 0 0 10px #39ff14;
+}
