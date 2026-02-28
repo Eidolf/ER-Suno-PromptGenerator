@@ -23,8 +23,8 @@
     linear-gradient(90deg, rgba(255, 0, 255, 0.4) 2px, transparent 2px);
   background-size: 60px 60px;
   background-position: center;
-  /* Reduced rotateX to flatten it slightly and translateY up to hit the ~50% mark */
-  transform: perspective(800px) rotateX(55deg) rotateZ(-30deg) translateY(-50vh);
+  /* Reduced translate Y to find the mid-point between the previous options */
+  transform: perspective(700px) rotateX(65deg) rotateZ(-30deg) translateY(-25vh);
   transform-origin: center top;
   animation: grid-move-diagonal 12s linear infinite;
   z-index: -2;
