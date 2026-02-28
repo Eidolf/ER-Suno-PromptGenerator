@@ -6,6 +6,7 @@ router = APIRouter()
 
 class PromptRequest(BaseModel):
     text: str
+    genres: List[str] = []
 
 class PromptResponse(BaseModel):
     genres: str
@@ -16,7 +17,7 @@ class PromptResponse(BaseModel):
 def generate_prompt(req: PromptRequest):
     # Domain logic placeholder
     # rough recognition of strophes and refrain
-    lines = req.text.split("\\n")
+    lines = req.text.split("\n")
     formatted = []
     
     # Very basic placeholder logic for formatting
@@ -37,7 +38,7 @@ def generate_prompt(req: PromptRequest):
             formatted.append(line.strip())
             
     return PromptResponse(
-        genres="Pop, Electronic",
+        genres=", ".join(req.genres) if req.genres else "Pop, Electronic",
         styles="Upbeat, Energetic",
-        lyrics_formatted="\\n".join(formatted)
+        lyrics_formatted="\n".join(formatted)
     )
