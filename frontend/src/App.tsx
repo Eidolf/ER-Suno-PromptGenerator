@@ -9,11 +9,12 @@ interface PromptResponse {
 
 const GENRES = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic'];
 const METAL_SUBGENRES = ['Heavy Metal', 'Thrash Metal', 'Death Metal', 'Black Metal', 'Power Metal', 'Doom Metal', 'Symphonic Metal', 'Progressive Metal', 'Nu Metal', 'Folk Metal', 'Metalcore', 'Deathcore', 'Industrial Metal', 'Groove Metal', 'Metal'];
-const TAGS = ['[Tempo: Fast]', '[Tempo: Slow]', '[Tempo: Upbeat]', '[Style: Acoustic]', '[Style: Epic]', '[Style: Intimate]', '[Vocal: Female]', '[Vocal: Male]', '[Instrumental]', '[Drop]', '[Build-up]'];
+const TAGS = ['[Verse]', '[Chorus]', '[Tempo: Fast]', '[Tempo: Slow]', '[Tempo: Upbeat]', '[Style: Acoustic]', '[Style: Epic]', '[Style: Intimate]', '[Vocal: Female]', '[Vocal: Male]', '[Instrumental]', '[Drop]', '[Build-up]'];
 
 function App() {
     const [text, setText] = useState('');
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+    const [genreFilter, setGenreFilter] = useState('');
     const [result, setResult] = useState<PromptResponse | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -25,15 +26,23 @@ function App() {
 
     const insertTag = (tag: string) => {
         if (!textareaRef.current) return;
+
+        let tagToInsert = tag;
+        if (tag === '[Verse]') {
+            const verseMatches = text.match(/\[Verse \d+\]/gi) || [];
+            const nextVerseNum = verseMatches.length + 1;
+            tagToInsert = `[Verse ${nextVerseNum}]`;
+        }
+
         const start = textareaRef.current.selectionStart;
         const end = textareaRef.current.selectionEnd;
-        const newText = text.substring(0, start) + tag + text.substring(end);
+        const newText = text.substring(0, start) + tagToInsert + text.substring(end);
         setText(newText);
 
         // Reset cursor position after React state update
         setTimeout(() => {
             if (textareaRef.current) {
-                textareaRef.current.selectionStart = textareaRef.current.selectionEnd = start + tag.length;
+                textareaRef.current.selectionStart = textareaRef.current.selectionEnd = start + tagToInsert.length;
                 textareaRef.current.focus();
             }
         }, 0);
@@ -59,10 +68,20 @@ function App() {
                 <h1>Suno Prompt Generator</h1>
             </header>
             <main>
+                <div className="filter-container">
+                    <input
+                        type="text"
+                        placeholder="Search genres..."
+                        className="genre-filter"
+                        value={genreFilter}
+                        onChange={(e) => setGenreFilter(e.target.value)}
+                    />
+                </div>
+
                 <div className="selection-section">
                     <h3>Select Genres</h3>
                     <div className="chip-container">
-                        {GENRES.map(genre => (
+                        {GENRES.filter(g => g.toLowerCase().includes(genreFilter.toLowerCase())).map(genre => (
                             <button
                                 key={genre}
                                 className={`chip ${selectedGenres.includes(genre) ? 'active' : ''}`}
@@ -77,7 +96,7 @@ function App() {
                 <div className="selection-section">
                     <h3>Metal Subgenres (Primary)</h3>
                     <div className="chip-container">
-                        {METAL_SUBGENRES.map(genre => (
+                        {METAL_SUBGENRES.filter(g => g.toLowerCase().includes(genreFilter.toLowerCase())).map(genre => (
                             <button
                                 key={genre}
                                 className={`chip ${selectedGenres.includes(genre) ? 'active' : ''}`}
