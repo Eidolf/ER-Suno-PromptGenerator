@@ -114,8 +114,26 @@ pre {
   color: #fff;
 }
 
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
 .generate-btn {
   font-size: 1.1rem;
-  padding: 1rem 3rem;
-  margin-top: 2rem;
+  padding: 1rem 2rem;
+  margin-top: 0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: linear-gradient(45deg, #0cebeb, #20e3b2);
+  color: #000;
+  font-weight: bold;
+}
+
+.instrumental-btn {
+  background: linear-gradient(45deg, #ff416c, #ff4b2b);
+  color: #fff;
 }

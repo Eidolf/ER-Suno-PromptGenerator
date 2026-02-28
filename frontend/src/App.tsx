@@ -7,7 +7,8 @@ interface PromptResponse {
     lyrics_formatted: string;
 }
 
-const GENRES = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Metal', 'Lo-Fi', 'EDM', 'Acoustic'];
+const GENRES = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic'];
+const METAL_SUBGENRES = ['Heavy Metal', 'Thrash Metal', 'Death Metal', 'Black Metal', 'Power Metal', 'Doom Metal', 'Symphonic Metal', 'Progressive Metal', 'Nu Metal', 'Folk Metal', 'Metalcore', 'Deathcore', 'Industrial Metal', 'Groove Metal', 'Metal'];
 const TAGS = ['[Tempo: Fast]', '[Tempo: Slow]', '[Tempo: Upbeat]', '[Style: Acoustic]', '[Style: Epic]', '[Style: Intimate]', '[Vocal: Female]', '[Vocal: Male]', '[Instrumental]', '[Drop]', '[Build-up]'];
 
 function App() {
@@ -74,6 +75,21 @@ function App() {
                 </div>
 
                 <div className="selection-section">
+                    <h3>Metal Subgenres (Primary)</h3>
+                    <div className="chip-container">
+                        {METAL_SUBGENRES.map(genre => (
+                            <button
+                                key={genre}
+                                className={`chip ${selectedGenres.includes(genre) ? 'active' : ''}`}
+                                onClick={() => toggleGenre(genre)}
+                            >
+                                {genre}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="selection-section">
                     <h3>Insert Tags</h3>
                     <div className="chip-container">
                         {TAGS.map(tag => (
@@ -98,7 +114,17 @@ function App() {
                     cols={50}
                 />
                 <br />
-                <button className="generate-btn" onClick={handleGenerate}>Generate Prompt</button>
+                <div className="button-group">
+                    <button className="generate-btn" onClick={handleGenerate}>Generate Prompt</button>
+                    <button
+                        className="generate-btn instrumental-btn"
+                        onClick={() => {
+                            setText('[Instrumental]');
+                        }}
+                    >
+                        [Instrumental] Only
+                    </button>
+                </div>
                 {result && (
                     <div className="result-container">
                         <h3>Genres/Styles:</h3>
