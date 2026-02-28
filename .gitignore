@@ -32,3 +32,6 @@ dist-ssr/
 # Logs
 logs/
 *.log
+
+# Secrets (act)
+.secrets

@@ -14,9 +14,13 @@ cd "$PROJECT_ROOT"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-echo -e "${YELLOW}🚀 Starting Pre-Flight Validation...${NC}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${CYAN}  🚀 Pre-Flight Validation System${NC}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
 
 # Ensure setup has been run
 "$SCRIPT_DIR/setup_local_ci.sh"
@@ -26,8 +30,9 @@ echo ""
 FAST_LINT_FRONTEND=0
 FAST_LINT_BACKEND=0
 ACT_WORKFLOWS=0
+DOCKER_BUILD=0
 
-echo -e "${YELLOW}⚡ Running Fast Local Linters...${NC}"
+echo -e "${YELLOW}⚡ Phase 1: Fast Local Linters${NC}"
 
 # 1. Fast Frontend Lint
 echo "🔧 Checking Frontend (ESLint)..."
@@ -55,7 +60,7 @@ else
 fi
 
 echo ""
-echo -e "${YELLOW}🎬 Executing GitHub Actions Workflows Locally (act)...${NC}"
+echo -e "${YELLOW}🎬 Phase 2: GitHub Actions via act${NC}"
 
 # Determine secrets file argument
 ACT_ARGS=""
@@ -66,28 +71,18 @@ else
     echo "ℹ️ No .secrets file found. Proceeding without injected secrets."
 fi
 
-# Run Lint workflow via act
-echo "📋 Running Lint workflow..."
-if act -W .github/workflows/lint.yml $ACT_ARGS; then
-    echo -e "${GREEN}✅ Lint workflow passed.${NC}"
+# Run CI Orchestrator lint+test jobs via act
+echo "📋 Running CI Orchestrator (lint + test)..."
+if act -W .github/workflows/ci-orchestrator.yml -j lint $ACT_ARGS && act -W .github/workflows/ci-orchestrator.yml -j test $ACT_ARGS; then
+    echo -e "${GREEN}✅ CI workflows passed.${NC}"
 else
-    echo -e "${RED}❌ Lint workflow failed.${NC}"
-    ACT_WORKFLOWS=1
-fi
-
-# Run Test workflow via act
-echo "🧪 Running Test workflow..."
-if act -W .github/workflows/test.yml $ACT_ARGS; then
-    echo -e "${GREEN}✅ Test workflow passed.${NC}"
-else
-    echo -e "${RED}❌ Test workflow failed.${NC}"
+    echo -e "${RED}❌ CI workflows failed.${NC}"
     ACT_WORKFLOWS=1
 fi
 
 # Run Docker Build natively (act can't do Docker-in-Docker)
 echo ""
-echo -e "${YELLOW}🐳 Running Docker Build (native)...${NC}"
-DOCKER_BUILD=0
+echo -e "${YELLOW}🐳 Phase 3: Docker Build (native)${NC}"
 if docker build -t suno-prompt-generator .; then
     echo -e "${GREEN}✅ Docker build passed.${NC}"
 else
@@ -96,35 +91,35 @@ else
 fi
 
 echo ""
-echo "======================================"
-echo -e "${YELLOW}📊 Pre-Flight Validation Report${NC}"
-echo "======================================"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${CYAN}  📊 Pre-Flight Validation Report${NC}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 if [ $FAST_LINT_FRONTEND -eq 0 ]; then
-    echo -e "Frontend Fast Lint: ${GREEN}PASS${NC}"
+    echo -e "  Frontend Lint:  ${GREEN}PASS${NC}"
 else
-    echo -e "Frontend Fast Lint: ${RED}FAIL${NC}"
+    echo -e "  Frontend Lint:  ${RED}FAIL${NC}"
 fi
 
 if [ $FAST_LINT_BACKEND -eq 0 ]; then
-    echo -e "Backend Fast Lint:  ${GREEN}PASS${NC}"
+    echo -e "  Backend Lint:   ${GREEN}PASS${NC}"
 else
-    echo -e "Backend Fast Lint:  ${RED}FAIL${NC}"
+    echo -e "  Backend Lint:   ${RED}FAIL${NC}"
 fi
 
 if [ $ACT_WORKFLOWS -eq 0 ]; then
-    echo -e "GitHub Actions:     ${GREEN}PASS${NC}"
+    echo -e "  CI Workflows:   ${GREEN}PASS${NC}"
 else
-    echo -e "GitHub Actions:     ${RED}FAIL${NC}"
+    echo -e "  CI Workflows:   ${RED}FAIL${NC}"
 fi
 
 if [ $DOCKER_BUILD -eq 0 ]; then
-    echo -e "Docker Build:       ${GREEN}PASS${NC}"
+    echo -e "  Docker Build:   ${GREEN}PASS${NC}"
 else
-    echo -e "Docker Build:       ${RED}FAIL${NC}"
+    echo -e "  Docker Build:   ${RED}FAIL${NC}"
 fi
 
-echo "======================================"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 if [ $FAST_LINT_FRONTEND -eq 0 ] && [ $FAST_LINT_BACKEND -eq 0 ] && [ $ACT_WORKFLOWS -eq 0 ] && [ $DOCKER_BUILD -eq 0 ]; then
     echo -e "${GREEN}🎉 All pre-flight checks passed! Safe to push.${NC}"
@@ -133,4 +128,3 @@ else
     echo -e "${RED}⚠️ Some pre-flight checks failed. Review the logs above before pushing.${NC}"
     exit 1
 fi
-

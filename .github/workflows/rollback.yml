@@ -1,0 +1,53 @@
+name: Rollback
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to rollback (e.g. 2026.02.3)'
+        required: true
+        type: string
+      cleanup_runs:
+        description: 'Also cleanup associated workflow runs'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  rollback:
+    name: Rollback v${{ github.event.inputs.version }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate tag exists
+        run: |
+          if ! git tag -l "v${{ github.event.inputs.version }}" | grep -q .; then
+            echo "❌ Tag v${{ github.event.inputs.version }} not found"
+            exit 1
+          fi
+          echo "✅ Tag v${{ github.event.inputs.version }} found"
+
+      - name: Delete GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete "v${{ github.event.inputs.version }}" --yes --cleanup-tag || true
+          echo "✅ Release v${{ github.event.inputs.version }} deleted"
+
+      - name: Delete Git Tag
+        run: |
+          git push origin --delete "v${{ github.event.inputs.version }}" || true
+          git tag -d "v${{ github.event.inputs.version }}" || true
+          echo "✅ Tag v${{ github.event.inputs.version }} removed"
+
+      - name: Summary
+        run: |
+          echo "## Rollback Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- Version: v${{ github.event.inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Release deleted: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- Tag removed: ✅" >> $GITHUB_STEP_SUMMARY
