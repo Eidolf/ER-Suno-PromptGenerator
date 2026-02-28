@@ -1,0 +1,11 @@
+services:
+  suno-prompt-gen:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: suno-prompt-gen
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env

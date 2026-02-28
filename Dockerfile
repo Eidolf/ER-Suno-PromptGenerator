@@ -9,13 +9,14 @@ FROM python:3.11-slim AS build-backend
 WORKDIR /app
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY backend/ app/
+COPY backend/ backend/
 
 # Final Stage
 FROM python:3.11-slim
 WORKDIR /app
 COPY --from=build-backend /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
-COPY --from=build-backend /app/app /app/backend
+COPY --from=build-backend /app/backend /app/backend
 COPY --from=build-frontend /app/frontend/dist /app/frontend/dist
 
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENV PYTHONPATH=/app/backend
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
