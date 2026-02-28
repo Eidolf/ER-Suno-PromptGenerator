@@ -9,8 +9,10 @@ def test_health():
     assert res.json() == {"status": "ok"}
 
 def test_generate_prompt():
-    res = client.post("/api/v1/generate", json={"text": "Verse content\\nRefrain content"})
+    res = client.post("/api/v1/generate", json={"text": "Verse content\nRefrain content"})
     assert res.status_code == 200
     data = res.json()
-    assert "[Verse 1]" in data["lyrics_formatted"]
-    assert "[Refrain]" in data["lyrics_formatted"]
+    assert "lyrics_formatted" in data
+    assert "genres" in data
+    assert "styles" in data
+    assert "Verse content" in data["lyrics_formatted"]

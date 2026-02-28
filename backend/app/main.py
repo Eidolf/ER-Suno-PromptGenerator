@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from app.api import endpoints
+from pathlib import Path
 
 app = FastAPI(title="Suno Prompt Generator API", version="1.0.0")
 
@@ -33,11 +36,6 @@ def health_check():
 @app.get("/ready")
 def readiness_check():
     return {"status": "ready"}
-
-import os
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from pathlib import Path
 
 # When running via `python -m uvicorn app.main:app` from /app, __file__ might be app/main.py.
 # Using absolute Path resolving to anchor to the app directory reliably:
