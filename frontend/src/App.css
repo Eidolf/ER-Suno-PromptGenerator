@@ -407,10 +407,23 @@ pre {
   font-family: monospace;
   font-size: 1.1rem;
   transition: all 0.2s;
-  display: inline-block;
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.modal-link:last-child {
+  margin-bottom: 0;
 }
 
 .modal-link:hover {
   text-shadow: 0 0 10px #ff00ff;
   transform: translateX(5px);
+}
+
+.community-link {
+  color: #0cebeb;
+}
+
+.community-link:hover {
+  text-shadow: 0 0 10px #0cebeb;
 }

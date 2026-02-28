@@ -11,6 +11,7 @@ interface HelpTopic {
     title: string;
     description: string;
     url: string;
+    communityUrl?: string;
 }
 
 const GENRES = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic'];
@@ -21,17 +22,20 @@ const HELP_DATA: Record<string, HelpTopic> = {
     genres: {
         title: "Genres",
         description: "Genres define the foundational sound and instrumental arrangement of your track. Suno understands a wide variety of global genres. Combining them can lead to unique fusion styles.",
-        url: "https://help.suno.com/"
+        url: "https://help.suno.com/",
+        communityUrl: "https://sunoaiwiki.com/en/genres-and-styles/"
     },
     metal: {
         title: "Metal Subgenres",
         description: "Highly specific subgenres in Metal dictate the vocal style (e.g. growls vs clean singing), guitar tuning, and drumming patterns. For example, 'Deathcore' yields a much heavier, breakdown-oriented track than standard 'Heavy Metal'.",
-        url: "https://help.suno.com/"
+        url: "https://help.suno.com/",
+        communityUrl: "https://sunoaiwiki.com/en/genres-and-styles/"
     },
     tags: {
         title: "Structure Tags",
         description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Tempo: Fast] for momentary changes.",
-        url: "https://help.suno.com/"
+        url: "https://help.suno.com/",
+        communityUrl: "https://sunoaiwiki.com/en/meta-tags/"
     }
 };
 
@@ -193,9 +197,16 @@ function App() {
                             <button className="modal-close" onClick={() => setActiveHelp(null)}>×</button>
                             <h2>{HELP_DATA[activeHelp].title}</h2>
                             <p>{HELP_DATA[activeHelp].description}</p>
-                            <a href={HELP_DATA[activeHelp].url} target="_blank" rel="noopener noreferrer" className="modal-link">
-                                [ Official Suno Help ]
-                            </a>
+                            <div className="modal-links">
+                                <a href={HELP_DATA[activeHelp].url} target="_blank" rel="noopener noreferrer" className="modal-link">
+                                    [ Official Suno Help ]
+                                </a>
+                                {HELP_DATA[activeHelp].communityUrl && (
+                                    <a href={HELP_DATA[activeHelp].communityUrl} target="_blank" rel="noopener noreferrer" className="modal-link community-link">
+                                        [ Community Suno Wiki ]
+                                    </a>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
