@@ -2,15 +2,65 @@
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
   padding: 2rem;
-  background-color: #121212;
+  background-color: #050505;
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 255, 0.1) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-position: center;
   color: #ffffff;
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Optional: Add a subtle overlay scanline effect */
+.app-container::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+@keyframes neon-flicker {
+
+  0%,
+  18%,
+  22%,
+  25%,
+  53%,
+  57%,
+  100% {
+    text-shadow:
+      0 0 4px #fff,
+      0 0 11px #fff,
+      0 0 19px #fff,
+      0 0 40px #0fa,
+      0 0 80px #0fa,
+      0 0 90px #0fa,
+      0 0 100px #0fa,
+      0 0 150px #0fa;
+  }
+
+  20%,
+  24%,
+  55% {
+    text-shadow: none;
+  }
 }
 
 header h1 {
-  background: -webkit-linear-gradient(45deg, #0cebeb, #20e3b2, #29ffc6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #fff;
+  animation: neon-flicker 1.5s infinite alternate;
 }
 
 textarea {
@@ -18,46 +68,84 @@ textarea {
   max-width: 800px;
   display: block;
   margin: 0 auto;
-  background: #1e1e1e;
-  color: #fff;
-  border: 1px solid #333;
-  border-radius: 8px;
+  background: rgba(10, 10, 15, 0.8);
+  color: #0cebeb;
+  border: 1px solid #ff00ff;
+  border-radius: 4px;
   padding: 1rem;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-family: monospace;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #0cebeb;
+  box-shadow: 0 0 20px rgba(12, 235, 235, 0.5), inset 0 0 15px rgba(255, 0, 255, 0.2);
 }
 
 button {
-  background: linear-gradient(45deg, #8a2387, #e94057, #f27121);
   border: none;
   padding: 0.8rem 2rem;
-  border-radius: 20px;
-  color: white;
-  font-weight: bold;
+  border-radius: 4px;
+  color: #111;
+  font-weight: 900;
+  text-transform: uppercase;
   cursor: pointer;
   margin-top: 1rem;
-  transition: transform 0.2s;
+  transition: all 0.2s;
+  letter-spacing: 2px;
 }
 
 button:hover {
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  filter: brightness(1.2);
 }
 
 .result-container {
-  margin-top: 2rem;
+  margin-top: 3rem;
   text-align: left;
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
-  background: #1e1e1e;
-  padding: 1rem;
-  border-radius: 8px;
+  background: rgba(20, 10, 30, 0.85);
+  padding: 2rem;
+  border-radius: 4px;
+  border: 1px solid #0cebeb;
+  box-shadow: 0 0 20px rgba(12, 235, 235, 0.3);
+  position: relative;
+}
+
+.result-container::before {
+  content: 'FILE_SYSTEM_BREACH_DETECTED';
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: #000;
+  color: #ff00ff;
+  padding: 0 10px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.result-container h3 {
+  color: #fdf500;
+  margin-top: 0;
+  text-transform: uppercase;
+  border-bottom: 1px dashed #444;
+  padding-bottom: 0.5rem;
 }
 
 pre {
   white-space: pre-wrap;
-  background: #000;
+  background: #050505;
+  color: #0cebeb;
   padding: 1rem;
-  border-radius: 4px;
+  border-left: 3px solid #ff00ff;
+  border-radius: 0;
+  font-family: monospace;
+  font-size: 1.1rem;
 }
 
 .filter-container {
@@ -69,18 +157,24 @@ pre {
 
 .genre-filter {
   width: 100%;
-  padding: 0.8rem;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background: #2a2a2a;
-  color: #fff;
+  padding: 0.8rem 1rem;
+  border-radius: 0;
+  border: 1px solid #fdf500;
+  background: rgba(5, 5, 5, 0.9);
+  color: #fdf500;
   font-size: 1rem;
   box-sizing: border-box;
+  font-family: monospace;
+  text-transform: uppercase;
+}
+
+.genre-filter::placeholder {
+  color: rgba(253, 245, 0, 0.5);
 }
 
 .genre-filter:focus {
   outline: none;
-  border-color: #20e3b2;
+  box-shadow: 0 0 15px rgba(253, 245, 0, 0.4);
 }
 
 .selection-section {
@@ -94,49 +188,49 @@ pre {
 .selection-section h3 {
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
-  color: #ccc;
+  color: #0cebeb;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .chip-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.8rem;
 }
 
 .chip {
-  background: #2a2a2a;
-  color: #fff;
-  border: 1px solid #444;
+  background: transparent;
+  color: #ff00ff;
+  border: 1px solid #ff00ff;
   padding: 0.5rem 1rem;
-  border-radius: 20px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.9rem;
   margin-top: 0;
+  font-family: monospace;
 }
 
 .chip:hover {
-  background: #3a3a3a;
-  transform: translateY(-2px);
+  background: rgba(255, 0, 255, 0.1);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
 }
 
 .chip.active {
-  background: linear-gradient(45deg, #0cebeb, #20e3b2);
-  border-color: transparent;
+  background: #ff00ff;
   color: #000;
-  font-weight: bold;
+  box-shadow: 0 0 15px #ff00ff;
 }
 
 .chip.tag-chip {
-  background: #333;
-  border-radius: 8px;
-  font-family: monospace;
-  color: #20e3b2;
+  color: #0cebeb;
+  border-color: #0cebeb;
 }
 
 .chip.tag-chip:hover {
-  background: #444;
-  color: #fff;
+  background: rgba(12, 235, 235, 0.1);
+  box-shadow: 0 0 10px rgba(12, 235, 235, 0.5);
 }
 
 .button-group {
@@ -152,17 +246,24 @@ pre {
 
 .generate-btn {
   font-size: 1.1rem;
-  padding: 1rem 2rem;
+  padding: 1.2rem 2.5rem;
   margin-top: 0;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: linear-gradient(45deg, #0cebeb, #20e3b2);
+  background: #fdf500;
   color: #000;
-  font-weight: bold;
+  box-shadow: 4px 4px 0px #ff00ff;
+}
+
+.generate-btn:hover {
+  box-shadow: 2px 2px 0px #ff00ff;
+  transform: translate(2px, 2px);
+}
+
+.generate-btn:active {
+  box-shadow: 0px 0px 0px #ff00ff;
+  transform: translate(4px, 4px);
 }
 
 .instrumental-btn {
-  background: linear-gradient(45deg, #ff416c, #ff4b2b);
-  color: #fff;
+  background: #0cebeb;
+  box-shadow: 4px 4px 0px #ff00ff;
 }
