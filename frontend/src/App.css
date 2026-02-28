@@ -225,8 +225,9 @@ pre {
   margin-right: auto;
 }
 
-.selection-section h3 {
-  margin-bottom: 0.5rem;
+.selection-section h3,
+.section-header h3 {
+  margin-bottom: 0;
   font-size: 1.1rem;
   color: #0cebeb;
   text-transform: uppercase;
@@ -306,4 +307,110 @@ pre {
 .instrumental-btn {
   background: #0cebeb;
   box-shadow: 4px 4px 0px #ff00ff;
+}
+
+/* Help Icons & Modals */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.help-icon {
+  background: transparent;
+  color: #fdf500;
+  border: 1px solid #fdf500;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  margin-top: 2px;
+  transition: all 0.2s;
+  box-shadow: 0 0 5px rgba(253, 245, 0, 0.3);
+}
+
+.help-icon:hover {
+  background: rgba(253, 245, 0, 0.2);
+  box-shadow: 0 0 10px rgba(253, 245, 0, 0.6);
+  transform: scale(1.1) translateY(-2px);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modal-content {
+  background: rgba(10, 10, 15, 0.95);
+  border: 1px solid #0cebeb;
+  box-shadow: 0 0 30px rgba(12, 235, 235, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.1);
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  text-align: left;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: #ff00ff;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-close:hover {
+  text-shadow: 0 0 10px #ff00ff;
+  transform: scale(1.1) translateY(-2px);
+}
+
+.modal-content h2 {
+  color: #fdf500;
+  margin-top: 0;
+  text-transform: uppercase;
+  border-bottom: 1px dashed #444;
+  padding-bottom: 0.5rem;
+}
+
+.modal-content p {
+  color: #fff;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+}
+
+.modal-link {
+  color: #ff00ff;
+  text-decoration: none;
+  font-weight: bold;
+  font-family: monospace;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.modal-link:hover {
+  text-shadow: 0 0 10px #ff00ff;
+  transform: translateX(5px);
 }

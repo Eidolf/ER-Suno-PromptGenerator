@@ -7,15 +7,40 @@ interface PromptResponse {
     lyrics_formatted: string;
 }
 
+interface HelpTopic {
+    title: string;
+    description: string;
+    url: string;
+}
+
 const GENRES = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic'];
 const METAL_SUBGENRES = ['Heavy Metal', 'Thrash Metal', 'Death Metal', 'Black Metal', 'Power Metal', 'Doom Metal', 'Symphonic Metal', 'Progressive Metal', 'Nu Metal', 'Folk Metal', 'Metalcore', 'Deathcore', 'Industrial Metal', 'Groove Metal', 'Metal'];
 const TAGS = ['[Verse]', '[Chorus]', '[Tempo: Fast]', '[Tempo: Slow]', '[Tempo: Upbeat]', '[Style: Acoustic]', '[Style: Epic]', '[Style: Intimate]', '[Vocal: Female]', '[Vocal: Male]', '[Instrumental]', '[Drop]', '[Build-up]'];
+
+const HELP_DATA: Record<string, HelpTopic> = {
+    genres: {
+        title: "Genres",
+        description: "Genres define the foundational sound and instrumental arrangement of your track. Suno understands a wide variety of global genres. Combining them can lead to unique fusion styles.",
+        url: "https://www.suno.wiki/faq/making-music/style-and-genres/"
+    },
+    metal: {
+        title: "Metal Subgenres",
+        description: "Highly specific subgenres in Metal dictate the vocal style (e.g. growls vs clean singing), guitar tuning, and drumming patterns. For example, 'Deathcore' yields a much heavier, breakdown-oriented track than standard 'Heavy Metal'.",
+        url: "https://www.suno.wiki/faq/making-music/style-and-genres/"
+    },
+    tags: {
+        title: "Structure Tags",
+        description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Tempo: Fast] for momentary changes.",
+        url: "https://www.suno.wiki/faq/making-music/metatags/"
+    }
+};
 
 function App() {
     const [text, setText] = useState('');
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [genreFilter, setGenreFilter] = useState('');
     const [result, setResult] = useState<PromptResponse | null>(null);
+    const [activeHelp, setActiveHelp] = useState<string | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const toggleGenre = (genre: string) => {
@@ -79,7 +104,10 @@ function App() {
                 </div>
 
                 <div className="selection-section">
-                    <h3>Select Genres</h3>
+                    <div className="section-header">
+                        <h3>Select Genres</h3>
+                        <button className="help-icon" onClick={() => setActiveHelp('genres')} title="What are Genres?">?</button>
+                    </div>
                     <div className="chip-container">
                         {GENRES.filter(g => g.toLowerCase().includes(genreFilter.toLowerCase())).map(genre => (
                             <button
@@ -94,7 +122,10 @@ function App() {
                 </div>
 
                 <div className="selection-section">
-                    <h3>Metal Subgenres (Primary)</h3>
+                    <div className="section-header">
+                        <h3>Metal Subgenres (Primary)</h3>
+                        <button className="help-icon" onClick={() => setActiveHelp('metal')} title="What are Metal Subgenres?">?</button>
+                    </div>
                     <div className="chip-container">
                         {METAL_SUBGENRES.filter(g => g.toLowerCase().includes(genreFilter.toLowerCase())).map(genre => (
                             <button
@@ -109,7 +140,10 @@ function App() {
                 </div>
 
                 <div className="selection-section">
-                    <h3>Insert Tags</h3>
+                    <div className="section-header">
+                        <h3>Insert Tags</h3>
+                        <button className="help-icon" onClick={() => setActiveHelp('tags')} title="How do Tags work?">?</button>
+                    </div>
                     <div className="chip-container">
                         {TAGS.map(tag => (
                             <button
@@ -150,6 +184,19 @@ function App() {
                         <p>{result.genres} - {result.styles}</p>
                         <h3>Formatted Lyrics:</h3>
                         <pre>{result.lyrics_formatted}</pre>
+                    </div>
+                )}
+
+                {activeHelp && HELP_DATA[activeHelp] && (
+                    <div className="modal-overlay" onClick={() => setActiveHelp(null)}>
+                        <div className="modal-content" onClick={e => e.stopPropagation()}>
+                            <button className="modal-close" onClick={() => setActiveHelp(null)}>×</button>
+                            <h2>{HELP_DATA[activeHelp].title}</h2>
+                            <p>{HELP_DATA[activeHelp].description}</p>
+                            <a href={HELP_DATA[activeHelp].url} target="_blank" rel="noopener noreferrer" className="modal-link">
+                                [ Official Suno Wiki Guide ]
+                            </a>
+                        </div>
                     </div>
                 )}
             </main>
