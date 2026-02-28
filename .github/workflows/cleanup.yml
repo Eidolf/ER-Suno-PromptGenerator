@@ -1,0 +1,12 @@
+name: Clean Up
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Weekly on Sunday
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old artifacts
+        uses: snok/install-poetry@v1 # Placeholder for cleanup script
+        run: echo "Cleaning up old workflows/caches..."
