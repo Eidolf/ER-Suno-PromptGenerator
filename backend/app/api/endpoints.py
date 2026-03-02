@@ -7,6 +7,7 @@ router = APIRouter()
 class PromptRequest(BaseModel):
     text: str
     genres: List[str] = []
+    styles: List[str] = []
 
 class PromptResponse(BaseModel):
     genres: str
@@ -24,8 +25,10 @@ def generate_prompt(req: PromptRequest):
         if line.strip():
             formatted.append(line.strip())
             
+    combined_tags = req.genres + req.styles
+            
     return PromptResponse(
-        genres=", ".join(req.genres) if req.genres else "Pop, Electronic",
-        styles="Upbeat, Energetic",
+        genres=", ".join(combined_tags) if combined_tags else "",
+        styles="", # Kept for API contract compatibility, but empty since we merged it above
         lyrics_formatted="\n".join(formatted)
     )

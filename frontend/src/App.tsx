@@ -18,6 +18,7 @@ interface HelpTopic {
 
 const GENRES = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic'];
 const METAL_SUBGENRES = ['Heavy Metal', 'Thrash Metal', 'Death Metal', 'Black Metal', 'Power Metal', 'Doom Metal', 'Symphonic Metal', 'Progressive Metal', 'Nu Metal', 'Folk Metal', 'Metalcore', 'Deathcore', 'Industrial Metal', 'Groove Metal', 'Metal'];
+const STYLES = ['Upbeat', 'Energetic', 'Slow', 'Emotional', 'Aggressive', 'Melancholic', 'Atmospheric', 'Epic', 'Dark', 'Happy', 'Sad', 'Chill', 'Ambient', 'Fast', 'Heavy'];
 const TAGS = ['[Intro]', '[Verse]', '[Pre-Chorus]', '[Chorus]', '[Bridge]', '[Guitar Solo]', '[Drop]', '[Build-up]', '[Breakdown]', '[Outro]', '[Fast Tempo]', '[Slow Tempo]', '[Upbeat]', '[Acoustic]', '[Epic]', '[Intimate]', '[Female Vocals]', '[Male Vocals]', '[Instrumental]'];
 
 const HELP_DATA: Record<string, HelpTopic> = {
@@ -41,6 +42,11 @@ const HELP_DATA: Record<string, HelpTopic> = {
             { title: "Aggressive Deathcore", template: "Deathcore, Breakdowns, Deep Growls, Blast Beats, Heavy" }
         ]
     },
+    styles: {
+        title: "Styles (Tone & Vibe)",
+        description: "Styles act as adjectives to shape the mood, feeling, and energy of the chosen genres. Select tones like 'Emotional', 'Aggressive', or 'Upbeat' to guide the vibe of your song without necessarily switching genres.",
+        url: "https://help.suno.com/"
+    },
     tags: {
         title: "Structure Tags",
         description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Fast Tempo] for momentary changes.",
@@ -57,6 +63,7 @@ const HELP_DATA: Record<string, HelpTopic> = {
 function App() {
     const [text, setText] = useState('');
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+    const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
     const [genreFilter, setGenreFilter] = useState('');
     const [result, setResult] = useState<PromptResponse | null>(null);
     const [activeHelp, setActiveHelp] = useState<string | null>(null);
@@ -65,6 +72,12 @@ function App() {
     const toggleGenre = (genre: string) => {
         setSelectedGenres((prev: string[]) =>
             prev.includes(genre) ? prev.filter((g: string) => g !== genre) : [...prev, genre]
+        );
+    };
+
+    const toggleStyle = (style: string) => {
+        setSelectedStyles((prev: string[]) =>
+            prev.includes(style) ? prev.filter((s: string) => s !== style) : [...prev, style]
         );
     };
 
@@ -102,7 +115,7 @@ function App() {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text, genres: selectedGenres })
+                body: JSON.stringify({ text, genres: selectedGenres, styles: selectedStyles })
             });
             const data: PromptResponse = await response.json();
             setResult(data);
@@ -158,6 +171,24 @@ function App() {
                                 onClick={() => toggleGenre(genre)}
                             >
                                 {genre}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="selection-section">
+                    <div className="section-header">
+                        <h3>Select Styles (Tone/Vibe)</h3>
+                        <button className="help-icon" onClick={() => setActiveHelp('styles')} title="What are Styles?">?</button>
+                    </div>
+                    <div className="chip-container">
+                        {STYLES.filter(s => s.toLowerCase().includes(genreFilter.toLowerCase())).map(style => (
+                            <button
+                                key={style}
+                                className={`chip ${selectedStyles.includes(style) ? 'active' : ''}`}
+                                onClick={() => toggleStyle(style)}
+                            >
+                                {style}
                             </button>
                         ))}
                     </div>
