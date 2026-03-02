@@ -214,7 +214,7 @@ function App() {
             const tagContent = text.substring(tagStartIdx + 1, tagEndIdx);
 
             let newTagContent = "";
-            if (tagContent.includes('-')) {
+            if (tagContent.includes(' - ')) {
                 // Already has a modifier section
                 const cleanTag = tagContent.trim();
                 newTagContent = cleanTag.endsWith(',') ? `${cleanTag} ${style.toLowerCase()}` : `${cleanTag}, ${style.toLowerCase()}`;
