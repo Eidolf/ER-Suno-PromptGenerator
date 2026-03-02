@@ -37,10 +37,15 @@ def health_check():
 def readiness_check():
     return {"status": "ready"}
 
-# When running via `python -m uvicorn app.main:app` from /app, __file__ might be app/main.py.
-# Using absolute Path resolving to anchor to the app directory reliably:
-base_dir = Path(__file__).resolve().parent.parent
-frontend_dir = base_dir.parent / "frontend" / "dist"
+# Resolve frontend directory path
+# In local dev: `backend/app/main.py` -> `frontend/dist` relative is `../../frontend/dist`
+# In Docker: `WORKDIR /app`, backend is `/app/backend/app/main.py`, frontend is at `/app/frontend/dist`
+current_file = Path(__file__).resolve()
+# Go up from app/main.py to backend/
+backend_dir = current_file.parent.parent
+
+# In both cases (local or docker root), frontend is a sibling to backend
+frontend_dir = backend_dir.parent / "frontend" / "dist"
 
 if frontend_dir.exists():
     assets_dir = frontend_dir / "assets"

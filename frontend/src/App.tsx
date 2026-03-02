@@ -94,7 +94,12 @@ function App() {
 
     const handleGenerate = async () => {
         try {
-            const response = await fetch('http://localhost:13050/api/v1/generate', {
+            // Use relative path in production, fallback to localhost for local dev if needed
+            const apiUrl = import.meta.env.PROD
+                ? '/api/v1/generate'
+                : 'http://localhost:13050/api/v1/generate';
+
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text, genres: selectedGenres })
