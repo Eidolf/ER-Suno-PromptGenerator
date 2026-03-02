@@ -34,7 +34,7 @@ const HELP_DATA: Record<string, HelpTopic> = {
     },
     tags: {
         title: "Structure Tags",
-        description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Tempo: Fast] for momentary changes.",
+        description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Fast Tempo] for momentary changes.",
         url: "https://help.suno.com/",
         communityUrl: "https://sunoaiwiki.com/resources/2024-05-13-list-of-metatags/",
         tutorialUrl: "https://sunometatagcreator.com/metatags-guide"
