@@ -480,3 +480,49 @@ pre {
   font-size: 0.9em;
   margin: 0;
 }
+.show-more-btn {
+    background: transparent;
+    border: none;
+    color: var(--neon-cyan);
+    font-size: 0.9em;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 5px 10px;
+    font-family: inherit;
+    text-decoration: underline;
+    transition: all 0.2s ease;
+}
+
+.show-more-btn:hover {
+    color: #fff;
+    text-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.result-header h3 {
+    margin: 0;
+}
+
+.copy-btn {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--neon-pink);
+    color: var(--neon-pink);
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background: var(--neon-pink);
+    color: #000;
+    box-shadow: 0 0 10px var(--neon-pink);
+}

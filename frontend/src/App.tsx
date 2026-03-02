@@ -16,10 +16,28 @@ interface HelpTopic {
     examples?: { title: string; template: string }[];
 }
 
-const GENRES = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic'];
-const METAL_SUBGENRES = ['Heavy Metal', 'Thrash Metal', 'Death Metal', 'Black Metal', 'Power Metal', 'Doom Metal', 'Symphonic Metal', 'Progressive Metal', 'Nu Metal', 'Folk Metal', 'Metalcore', 'Deathcore', 'Industrial Metal', 'Groove Metal', 'Metal'];
-const STYLES = ['Upbeat', 'Energetic', 'Slow', 'Emotional', 'Aggressive', 'Melancholic', 'Atmospheric', 'Epic', 'Dark', 'Happy', 'Sad', 'Chill', 'Ambient', 'Fast', 'Heavy'];
-const TAGS = ['[Intro]', '[Verse]', '[Pre-Chorus]', '[Chorus]', '[Bridge]', '[Guitar Solo]', '[Drop]', '[Build-up]', '[Breakdown]', '[Outro]', '[Fast Tempo]', '[Slow Tempo]', '[Upbeat]', '[Acoustic]', '[Epic]', '[Intimate]', '[Female Vocals]', '[Male Vocals]', '[Instrumental]'];
+const GENRES = [
+    'Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic',
+    'Indie', 'Alternative', 'Folk', 'Soul', 'Funk', 'Blues', 'Reggae', 'Punk', 'Disco', 'House', 'Techno',
+    'Trance', 'Dubstep', 'Drum and Bass', 'Synthwave', 'Ambient', 'Trap', 'K-Pop', 'J-Pop'
+];
+const METAL_SUBGENRES = [
+    'Heavy Metal', 'Thrash Metal', 'Death Metal', 'Black Metal', 'Power Metal', 'Doom Metal', 'Symphonic Metal',
+    'Progressive Metal', 'Nu Metal', 'Folk Metal', 'Metalcore', 'Deathcore', 'Industrial Metal', 'Groove Metal',
+    'Gothic Metal', 'Sludge Metal', 'Post-Metal', 'Metal', 'Djent'
+];
+const STYLES = [
+    'Upbeat', 'Energetic', 'Slow', 'Emotional', 'Aggressive', 'Melancholic', 'Atmospheric', 'Epic', 'Dark',
+    'Happy', 'Sad', 'Chill', 'Ambient', 'Fast', 'Heavy', 'Driving', 'Groovy', 'Soothing', 'Dreamy', 'Intense',
+    'Romantic', 'Mysterious', 'Euphoric', 'Uplifting', 'Nostalgic', 'Funky', 'Raw', 'Polished'
+];
+const BPMS = ['80 BPM', '100 BPM', '120 BPM', '140 BPM', '160 BPM', '180 BPM', '200 BPM'];
+const TAGS = [
+    '[Intro]', '[Verse]', '[Pre-Chorus]', '[Chorus]', '[Bridge]', '[Guitar Solo]', '[Drop]', '[Build-up]',
+    '[Breakdown]', '[Outro]', '[Fast Tempo]', '[Slow Tempo]', '[Upbeat]', '[Acoustic]', '[Epic]', '[Intimate]',
+    '[Female Vocals]', '[Male Vocals]', '[Instrumental]', '[Bass Drop]', '[Beat Drop]', '[Vocalization]',
+    '[Choir]', '[Orchestral]', '[Synth Solo]', '[Drum Fill]', '[Fade Out]', '[Acapella]', '[End]'
+];
 
 const HELP_DATA: Record<string, HelpTopic> = {
     genres: {
@@ -47,6 +65,11 @@ const HELP_DATA: Record<string, HelpTopic> = {
         description: "Styles act as adjectives to shape the mood, feeling, and energy of the chosen genres. Select tones like 'Emotional', 'Aggressive', or 'Upbeat' to guide the vibe of your song without necessarily switching genres.",
         url: "https://help.suno.com/"
     },
+    bpm: {
+        title: "BPM (Beats Per Minute)",
+        description: "Setting a specific BPM helps guide Suno's internal tempo generator. Select a classic speed like 140 BPM for energetic tracks, or 100 BPM for mid-tempo grooves.",
+        url: "https://help.suno.com/"
+    },
     tags: {
         title: "Structure Tags",
         description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Fast Tempo] for momentary changes.",
@@ -64,21 +87,34 @@ function App() {
     const [text, setText] = useState('');
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+    const [selectedBpms, setSelectedBpms] = useState<string[]>([]);
     const [genreFilter, setGenreFilter] = useState('');
     const [result, setResult] = useState<PromptResponse | null>(null);
     const [activeHelp, setActiveHelp] = useState<string | null>(null);
+    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+    const [copied, setCopied] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const toggleGenre = (genre: string) => {
-        setSelectedGenres((prev: string[]) =>
-            prev.includes(genre) ? prev.filter((g: string) => g !== genre) : [...prev, genre]
+        setSelectedGenres((prev) =>
+            prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
         );
     };
 
     const toggleStyle = (style: string) => {
-        setSelectedStyles((prev: string[]) =>
-            prev.includes(style) ? prev.filter((s: string) => s !== style) : [...prev, style]
+        setSelectedStyles((prev) =>
+            prev.includes(style) ? prev.filter((s) => s !== style) : [...prev, style]
         );
+    };
+
+    const toggleBpm = (bpm: string) => {
+        setSelectedBpms((prev) =>
+            prev.includes(bpm) ? prev.filter((b) => b !== bpm) : [...prev, bpm]
+        );
+    };
+
+    const toggleSection = (section: string) => {
+        setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
     };
 
     const insertTag = (tag: string) => {
@@ -96,7 +132,6 @@ function App() {
         const newText = text.substring(0, start) + tagToInsert + text.substring(end);
         setText(newText);
 
-        // Reset cursor position after React state update
         setTimeout(() => {
             if (textareaRef.current) {
                 textareaRef.current.selectionStart = textareaRef.current.selectionEnd = start + tagToInsert.length;
@@ -107,21 +142,83 @@ function App() {
 
     const handleGenerate = async () => {
         try {
-            // Use relative path in production, fallback to localhost for local dev if needed
             const apiUrl = import.meta.env.PROD
                 ? '/api/v1/generate'
                 : 'http://localhost:13050/api/v1/generate';
 
+            // Merge BPMs logically into the genres so they string together nicely
+            const mergedGenres = [...selectedBpms, ...selectedGenres];
+
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text, genres: selectedGenres, styles: selectedStyles })
+                body: JSON.stringify({ text, genres: mergedGenres, styles: selectedStyles })
             });
             const data: PromptResponse = await response.json();
             setResult(data);
+            setCopied(false);
         } catch (error) {
             console.error("Error generating prompt:", error);
         }
+    };
+
+    const handleCopy = () => {
+        if (result?.lyrics_formatted) {
+            navigator.clipboard.writeText(result.lyrics_formatted).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            });
+        }
+    };
+
+    // Helper component for rendering mapped chips with the "Show More" functionality
+    const renderChips = (
+        items: string[],
+        selected: string[],
+        toggleFn: (item: string) => void,
+        sectionId: string,
+        isInsert: boolean = false
+    ) => {
+        const isExpanded = expandedSections[sectionId];
+        const filteredItems = items.filter(i => i.toLowerCase().includes(genreFilter.toLowerCase()));
+
+        const displayCount = 10;
+
+        // Always show selected items, then fill the rest up to displayCount with unselected
+        // If expanded, just show all filtered
+        let itemsToDisplay: string[] = [];
+
+        if (isExpanded) {
+            itemsToDisplay = filteredItems;
+        } else {
+            const selectedFiltered = filteredItems.filter(i => selected.includes(i));
+            const unselectedFiltered = filteredItems.filter(i => !selected.includes(i));
+            // Total to show is max(displayCount, selectedFiltered.length). 
+            const remainingSlots = Math.max(0, displayCount - selectedFiltered.length);
+            itemsToDisplay = [...selectedFiltered, ...unselectedFiltered.slice(0, remainingSlots)];
+        }
+
+        return (
+            <>
+                <div className="chip-container">
+                    {itemsToDisplay.map(item => (
+                        <button
+                            key={item}
+                            className={`chip ${isInsert ? 'tag-chip' : ''} ${selected.includes(item) ? 'active' : ''}`}
+                            onClick={() => isInsert ? insertTag(item) : toggleFn(item)}
+                            title={isInsert ? "Click to insert at cursor position" : "Toggle selection"}
+                        >
+                            {item}
+                        </button>
+                    ))}
+                </div>
+                {filteredItems.length > displayCount && (
+                    <button className="show-more-btn" onClick={() => toggleSection(sectionId)}>
+                        {isExpanded ? 'Show Less ⬆' : `Show More (${filteredItems.length - itemsToDisplay.length}) ⬇`}
+                    </button>
+                )}
+            </>
+        );
     };
 
     return (
@@ -133,7 +230,7 @@ function App() {
                 <div className="filter-container">
                     <input
                         type="text"
-                        placeholder="Search genres..."
+                        placeholder="Search tags, genres, and styles..."
                         className="genre-filter"
                         value={genreFilter}
                         onChange={(e) => setGenreFilter(e.target.value)}
@@ -145,17 +242,7 @@ function App() {
                         <h3>Select Genres</h3>
                         <button className="help-icon" onClick={() => setActiveHelp('genres')} title="What are Genres?">?</button>
                     </div>
-                    <div className="chip-container">
-                        {GENRES.filter(g => g.toLowerCase().includes(genreFilter.toLowerCase())).map(genre => (
-                            <button
-                                key={genre}
-                                className={`chip ${selectedGenres.includes(genre) ? 'active' : ''}`}
-                                onClick={() => toggleGenre(genre)}
-                            >
-                                {genre}
-                            </button>
-                        ))}
-                    </div>
+                    {renderChips(GENRES, selectedGenres, toggleGenre, 'genres')}
                 </div>
 
                 <div className="selection-section">
@@ -163,17 +250,7 @@ function App() {
                         <h3>Metal Subgenres (Primary)</h3>
                         <button className="help-icon" onClick={() => setActiveHelp('metal')} title="What are Metal Subgenres?">?</button>
                     </div>
-                    <div className="chip-container">
-                        {METAL_SUBGENRES.filter(g => g.toLowerCase().includes(genreFilter.toLowerCase())).map(genre => (
-                            <button
-                                key={genre}
-                                className={`chip ${selectedGenres.includes(genre) ? 'active' : ''}`}
-                                onClick={() => toggleGenre(genre)}
-                            >
-                                {genre}
-                            </button>
-                        ))}
-                    </div>
+                    {renderChips(METAL_SUBGENRES, selectedGenres, toggleGenre, 'metal')}
                 </div>
 
                 <div className="selection-section">
@@ -181,17 +258,15 @@ function App() {
                         <h3>Select Styles (Tone/Vibe)</h3>
                         <button className="help-icon" onClick={() => setActiveHelp('styles')} title="What are Styles?">?</button>
                     </div>
-                    <div className="chip-container">
-                        {STYLES.filter(s => s.toLowerCase().includes(genreFilter.toLowerCase())).map(style => (
-                            <button
-                                key={style}
-                                className={`chip ${selectedStyles.includes(style) ? 'active' : ''}`}
-                                onClick={() => toggleStyle(style)}
-                            >
-                                {style}
-                            </button>
-                        ))}
+                    {renderChips(STYLES, selectedStyles, toggleStyle, 'styles')}
+                </div>
+
+                <div className="selection-section">
+                    <div className="section-header">
+                        <h3>Select BPM (Tempo)</h3>
+                        <button className="help-icon" onClick={() => setActiveHelp('bpm')} title="What is BPM?">?</button>
                     </div>
+                    {renderChips(BPMS, selectedBpms, toggleBpm, 'bpm')}
                 </div>
 
                 <div className="selection-section">
@@ -199,18 +274,7 @@ function App() {
                         <h3>Insert Tags</h3>
                         <button className="help-icon" onClick={() => setActiveHelp('tags')} title="How do Tags work?">?</button>
                     </div>
-                    <div className="chip-container">
-                        {TAGS.map(tag => (
-                            <button
-                                key={tag}
-                                className="chip tag-chip"
-                                onClick={() => insertTag(tag)}
-                                title="Click to insert at cursor position"
-                            >
-                                {tag}
-                            </button>
-                        ))}
-                    </div>
+                    {renderChips(TAGS, [], insertTag, 'tags', true)}
                 </div>
 
                 <textarea
@@ -237,7 +301,12 @@ function App() {
                     <div className="result-container">
                         <h3>Genres/Styles:</h3>
                         <p>{result.genres} - {result.styles}</p>
-                        <h3>Formatted Lyrics:</h3>
+                        <div className="result-header">
+                            <h3>Formatted Lyrics:</h3>
+                            <button className="copy-btn" onClick={handleCopy}>
+                                {copied ? 'Copied! ✓' : 'Copy to Clipboard 📋'}
+                            </button>
+                        </div>
                         <pre>{result.lyrics_formatted}</pre>
                     </div>
                 )}
