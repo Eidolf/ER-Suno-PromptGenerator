@@ -28,8 +28,6 @@ services:
     restart: unless-stopped
     ports:
       - "13050:13050"
-    env_file:
-      - .env
 ```
 
 ### Option 2: Pull from GitHub Container Registry
@@ -42,8 +40,6 @@ services:
     restart: unless-stopped
     ports:
       - "13050:13050"
-    env_file:
-      - .env
 ```
 
 ### Start
