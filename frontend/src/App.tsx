@@ -96,6 +96,69 @@ const HELP_DATA: Record<string, HelpTopic> = {
     }
 };
 
+const TOOLTIPS: Record<string, string> = {
+    // Styles
+    'Upbeat': 'Positive, cheerful, and fast-paced.',
+    'Energetic': 'High-intensity, lively, and driving.',
+    'Slow': 'Unrushed, relaxed, and deliberate pace.',
+    'Emotional': 'Expressive, deeply feeling, and moving.',
+    'Aggressive': 'Fierce, intense, and forceful.',
+    'Melancholic': 'Sorrowful, pensive, and sad.',
+    'Atmospheric': 'Focuses on mood, texture, and spatial audio.',
+    'Epic': 'Grand, monumental, and cinematic.',
+    'Dark': 'Ominous, gloomy, or brooding tone.',
+    'Happy': 'Joyful, bright, and positive.',
+    'Sad': 'Sorrowful, downbeat, and expressing grief.',
+    'Chill': 'Relaxing, laid-back, and easygoing.',
+    'Ambient': 'Background-focused, texture-heavy, no strict beat.',
+    'Fast': 'Quick tempo, rapid delivery.',
+    'Heavy': 'Thick texture, often loud, distorted, or bass-heavy.',
+    'Driving': 'Relentless forward momentum in rhythm.',
+    'Groovy': 'Rhythmic feel that strongly invites dancing or movement.',
+    'Soothing': 'Calming, gentle, and peaceful.',
+    'Dreamy': 'Ethereal, surreal, and smooth.',
+    'Intense': 'Extreme emotion or volume; highly focused.',
+    'Romantic': 'Expressing love or deep affection.',
+    'Mysterious': 'Enigmatic, suspenseful, and secretive.',
+    'Euphoric': 'Intensely happy, soaring, and ecstatic.',
+    'Uplifting': 'Inspiring hope, elevation, and optimism.',
+    'Nostalgic': 'Evocative of the past, sentimental.',
+    'Funky': 'Syncopated, bass-forward, and bouncy.',
+    'Raw': 'Unpolished, authentic, and gritty.',
+    'Polished': 'Clean, highly produced, and perfect.',
+
+    // Tags
+    '[Intro]': 'The opening section of the song before the main vocals.',
+    '[Verse]': 'The main storytelling section; melody is often consistent while lyrics change.',
+    '[Pre-Chorus]': 'Builds tension and transitions from the verse to the chorus.',
+    '[Chorus]': 'The memorable, repeating core message and melody of the song.',
+    '[Bridge]': 'A contrasting section to introduce new musical ideas, often near the end.',
+    '[Guitar Solo]': 'An instrumental section featuring a lead guitar.',
+    '[Drop]': 'The climax of an electronic track, featuring heavy bass and beats.',
+    '[Build-up]': 'A section of rising tension and increasing speed, usually before a drop.',
+    '[Breakdown]': 'A stripped-back section where most instruments drop out to rebuild energy.',
+    '[Outro]': 'The closing, fading section of the song.',
+    '[Fast Tempo]': 'Instruction to suddenly increase the speed of the song.',
+    '[Slow Tempo]': 'Instruction to suddenly decrease the speed or stretch out the timing.',
+    '[Upbeat]': 'Instruction to shift to a happier, bouncy rhythm.',
+    '[Acoustic]': 'Instruction to switch to non-electronic, organic instruments.',
+    '[Epic]': 'Instruction to shift to a massive, cinematic arrangement.',
+    '[Intimate]': 'Instruction to bring the vocals closer and quiet the instruments.',
+    '[Female Vocals]': 'Request female singer.',
+    '[Male Vocals]': 'Request male singer.',
+    '[Instrumental]': 'Request a section (or whole song) without any vocals.',
+    '[Bass Drop]': 'A sudden, heavy impact of sub-bass frequencies.',
+    '[Beat Drop]': 'The moment the full rhythm section kicks in.',
+    '[Vocalization]': 'Non-lyrical singing (e.g., "oohs", "aahs").',
+    '[Choir]': 'A group of voices singing in harmony.',
+    '[Orchestral]': 'Instruction to bring in classical string and brass sections.',
+    '[Synth Solo]': 'An instrumental section featuring an electronic synthesizer.',
+    '[Drum Fill]': 'A short flourish played on the drums to fill a gap.',
+    '[Fade Out]': 'Instruction to gradually lower the volume to end the song.',
+    '[Acapella]': 'Vocals only, completely without instrumental backing.',
+    '[End]': 'Hard stop to officially terminate the song generation.'
+};
+
 function App() {
     const [text, setText] = useState('');
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
@@ -118,6 +181,62 @@ function App() {
         setSelectedStyles((prev) =>
             prev.includes(style) ? prev.filter((s) => s !== style) : [...prev, style]
         );
+    };
+
+    // Logic for contextual Tag Modifiers vs Global Styles
+    const handleStyleClick = (style: string) => {
+        if (!textareaRef.current) {
+            toggleStyle(style);
+            return;
+        }
+
+        const start = textareaRef.current.selectionStart;
+
+        // Find if we are currently inside brackets [ ]
+        const textBeforeCursor = text.substring(0, start);
+        const textAfterCursor = text.substring(start);
+
+        const lastOpenBracket = textBeforeCursor.lastIndexOf('[');
+        const lastCloseBracketBefore = textBeforeCursor.lastIndexOf(']');
+
+        const nextCloseBracket = textAfterCursor.indexOf(']');
+        const nextOpenBracketAfter = textAfterCursor.indexOf('[');
+
+        // We are inside a bracket if: last open bracket was not closed before cursor, and a close bracket exists after
+        const isInsideBracket = lastOpenBracket !== -1 &&
+            lastOpenBracket > lastCloseBracketBefore &&
+            nextCloseBracket !== -1 &&
+            (nextOpenBracketAfter === -1 || nextCloseBracket < nextOpenBracketAfter);
+
+        if (isInsideBracket) {
+            const tagStartIdx = lastOpenBracket;
+            const tagEndIdx = start + nextCloseBracket;
+            const tagContent = text.substring(tagStartIdx + 1, tagEndIdx);
+
+            let newTagContent = "";
+            if (tagContent.includes('-')) {
+                // Already has a modifier section
+                const cleanTag = tagContent.trim();
+                newTagContent = cleanTag.endsWith(',') ? `${cleanTag} ${style.toLowerCase()}` : `${cleanTag}, ${style.toLowerCase()}`;
+            } else {
+                // First modifier
+                newTagContent = `${tagContent.trim()} - ${style.toLowerCase()}`;
+            }
+
+            const newText = text.substring(0, tagStartIdx + 1) + newTagContent + text.substring(tagEndIdx);
+            setText(newText);
+
+            setTimeout(() => {
+                if (textareaRef.current) {
+                    const newCursorPos = tagStartIdx + 1 + newTagContent.length;
+                    textareaRef.current.selectionStart = textareaRef.current.selectionEnd = newCursorPos;
+                    textareaRef.current.focus();
+                }
+            }, 0);
+        } else {
+            // Not inside a tag, toggle as global style
+            toggleStyle(style);
+        }
     };
 
     const toggleBpm = (bpm: string) => {
@@ -220,7 +339,7 @@ function App() {
                             key={item}
                             className={`chip ${isInsert ? 'tag-chip' : ''} ${selected.includes(item) ? 'active' : ''}`}
                             onClick={() => isInsert ? insertTag(item) : toggleFn(item)}
-                            title={isInsert ? "Click to insert at cursor position" : "Toggle selection"}
+                            title={TOOLTIPS[item] || (isInsert ? "Click to insert at cursor position" : "Toggle selection")}
                         >
                             {item}
                         </button>
@@ -272,7 +391,7 @@ function App() {
                         <h3>Select Styles (Tone/Vibe)</h3>
                         <button className="help-icon" onClick={() => setActiveHelp('styles')} title="What are Styles?">?</button>
                     </div>
-                    {renderChips(STYLES, selectedStyles, toggleStyle, 'styles')}
+                    {renderChips(STYLES, selectedStyles, handleStyleClick, 'styles')}
                 </div>
 
                 <div className="selection-section">
