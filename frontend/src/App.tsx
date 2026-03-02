@@ -13,6 +13,7 @@ interface HelpTopic {
     url: string;
     communityUrl?: string;
     tutorialUrl?: string;
+    examples?: { title: string; template: string }[];
 }
 
 const GENRES = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic'];
@@ -24,20 +25,32 @@ const HELP_DATA: Record<string, HelpTopic> = {
         title: "Genres",
         description: "Genres define the foundational sound and instrumental arrangement of your track. Suno understands a wide variety of global genres. Combining them can lead to unique fusion styles.",
         url: "https://help.suno.com/",
-        communityUrl: "https://sunoaiwiki.com/resources/2024-05-03-list-of-music-genres-and-styles/"
+        communityUrl: "https://sunoaiwiki.com/resources/2024-05-03-list-of-music-genres-and-styles/",
+        examples: [
+            { title: "Synthwave Banger", template: "Synthwave, 80s, Electronic, Retrowave, Driving" },
+            { title: "Acoustic Ballad", template: "Acoustic, Indie Folk, Intimate, Emotional, Guitar" }
+        ]
     },
     metal: {
         title: "Metal Subgenres",
         description: "Highly specific subgenres in Metal dictate the vocal style (e.g. growls vs clean singing), guitar tuning, and drumming patterns. For example, 'Deathcore' yields a much heavier, breakdown-oriented track than standard 'Heavy Metal'.",
         url: "https://help.suno.com/",
-        communityUrl: "https://sunoaiwiki.com/resources/2024-05-03-list-of-music-genres-and-styles/"
+        communityUrl: "https://sunoaiwiki.com/resources/2024-05-03-list-of-music-genres-and-styles/",
+        examples: [
+            { title: "Epic Symphonic Metal", template: "Symphonic Metal, Operatic Female Vocals, Orchestral, Epic" },
+            { title: "Aggressive Deathcore", template: "Deathcore, Breakdowns, Deep Growls, Blast Beats, Heavy" }
+        ]
     },
     tags: {
         title: "Structure Tags",
         description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Fast Tempo] for momentary changes.",
         url: "https://help.suno.com/",
         communityUrl: "https://sunoaiwiki.com/resources/2024-05-13-list-of-metatags/",
-        tutorialUrl: "https://sunometatagcreator.com/metatags-guide"
+        tutorialUrl: "https://sunometatagcreator.com/metatags-guide",
+        examples: [
+            { title: "Standard Pop Structure", template: "[Intro]\n(Instrumental build up)\n\n[Verse 1]\nWalking down the neon street...\n\n[Pre-Chorus]\nAnd I feel it coming...\n\n[Chorus]\nElectric love in the night!\n\n[Outro]\n(Fading synths)" },
+            { title: "EDM Drop Structure", template: "[Intro]\nAtmospheric pads\n\n[Build-up]\nFaster drums, rising tension\n\n[Drop]\nHeavy bassline, energetic\n[Fast Tempo]" }
+        ]
     }
 };
 
@@ -199,6 +212,19 @@ function App() {
                             <button className="modal-close" onClick={() => setActiveHelp(null)}>×</button>
                             <h2>{HELP_DATA[activeHelp].title}</h2>
                             <p>{HELP_DATA[activeHelp].description}</p>
+
+                            {HELP_DATA[activeHelp].examples && (
+                                <div className="modal-examples">
+                                    <h3>Examples</h3>
+                                    {HELP_DATA[activeHelp].examples.map((ex, i) => (
+                                        <div key={i} className="example-item">
+                                            <strong>{ex.title}:</strong>
+                                            <pre className="example-template">{ex.template}</pre>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                             <div className="modal-links">
                                 <a href={HELP_DATA[activeHelp].url} target="_blank" rel="noopener noreferrer" className="modal-link">
                                     [ Official Suno Help ]
