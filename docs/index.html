@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ER Suno Prompt Generator | AI Music Creation Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="glow-bg"></div>
+    <div class="grid-overlay"></div>
+
+    <header class="navbar">
+        <div class="logo">Suno <span>PromptGen</span></div>
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#demo">Preview</a>
+            <a href="#installation">Setup</a>
+            <a href="https://github.com/Eidolf/ER-Suno-PromptGenerator" target="_blank" class="github-link">GitHub
+                Repository</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Craft the Perfect <span class="neon-text">Suno AI</span> Prompt</h1>
+            <p>A production-ready full-stack application designed to help you structure, format, and generate advanced
+                prompts for AI music creation.</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/Eidolf/ER-Suno-PromptGenerator" class="btn primary">View Source on
+                    GitHub</a>
+                <a href="#installation" class="btn secondary">Installation Guide</a>
+            </div>
+        </section>
+
+        <section id="demo" class="showcase">
+            <div class="image-wrapper">
+                <img src="images/dashboard.png" alt="Suno Prompt Generator Dashboard UI" loading="lazy">
+                <div class="reflection"></div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🎸</div>
+                <h3>Advanced Tagging</h3>
+                <p>Easily insert structural metatags like [Verse], [Chorus], and [Guitar Solo] directly into your lyrics
+                    with a single click. Includes auto-incrementing tags for complex arrangements.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤘</div>
+                <h3>Deep Metal Subgenres</h3>
+                <p>Specific support for heavy music. Select from Deathcore, Symphonic Metal, Doom Metal and more to
+                    automatically lock in the right instrumentation and vocal styles.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Cyberpunk Aesthetic</h3>
+                <p>A sleek, dark-mode, neon-infused user interface built with React that makes prompt engineering feel
+                    like hacking the mainframe.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛠️</div>
+                <h3>Enterprise CI/CD</h3>
+                <p>Includes a comprehensive GitHub Actions orchestrator, Pre-Flight local validation, manual rollbacks,
+                    and advanced date-based versioning.</p>
+            </div>
+        </section>
+
+        <section id="installation" class="installation">
+            <h2>Quick Start with Docker</h2>
+            <p>The fastest way to run the generator locally is using Docker Compose. Make sure Docker is running, then
+                execute:</p>
+
+            <div class="code-block">
+                <pre><code># Create a basic docker-compose.yml
+cat &lt;&lt;EOF &gt; docker-compose.yml
+services:
+  suno-prompt-gen:
+    image: ghcr.io/eidolf/er-suno-promptgenerator:latest
+    ports:
+      - "13050:13050"
+    restart: unless-stopped
+EOF
+
+# Start the application
+docker compose up -d</code></pre>
+            </div>
+            <p>Open <strong>http://localhost:13050</strong> in your browser to start generating prompts!</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>ER Suno Prompt Generator &copy; 2026. Built for the Suno AI community.</p>
+        <p><a href="https://sunoaiwiki.com" target="_blank">Suno Community Wiki</a> | <a
+                href="https://sunometatagcreator.com/metatags-guide" target="_blank">Meta Tags Guide</a></p>
+    </footer>
+</body>
+
+</html>
