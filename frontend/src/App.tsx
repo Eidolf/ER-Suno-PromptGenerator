@@ -16,6 +16,19 @@ interface HelpTopic {
     examples?: { title: string; template: string }[];
 }
 
+const CopyIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginLeft: '6px' }}>
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    </svg>
+);
+
+const CheckIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginLeft: '6px' }}>
+        <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+);
+
 const GENRES = [
     'Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic',
     'Indie', 'Alternative', 'Folk', 'Soul', 'Funk', 'Blues', 'Reggae', 'Punk', 'Disco', 'House', 'Techno',
@@ -146,13 +159,14 @@ function App() {
                 ? '/api/v1/generate'
                 : 'http://localhost:13050/api/v1/generate';
 
-            // Merge BPMs logically into the genres so they string together nicely
-            const mergedGenres = [...selectedBpms, ...selectedGenres];
+            // To achieve "Genre -> Styles -> Tempo" ordering, 
+            // since backend does: combined_tags = genres + styles
+            const mergedStylesAndBpms = [...selectedStyles, ...selectedBpms];
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text, genres: mergedGenres, styles: selectedStyles })
+                body: JSON.stringify({ text, genres: selectedGenres, styles: mergedStylesAndBpms })
             });
             const data: PromptResponse = await response.json();
             setResult(data);
@@ -304,7 +318,7 @@ function App() {
                         <div className="result-header">
                             <h3>Formatted Lyrics:</h3>
                             <button className="copy-btn" onClick={handleCopy}>
-                                {copied ? 'Copied! ✓' : 'Copy to Clipboard 📋'}
+                                {copied ? <>Copied! <CheckIcon /></> : <>Copy to Clipboard <CopyIcon /></>}
                             </button>
                         </div>
                         <pre>{result.lyrics_formatted}</pre>
