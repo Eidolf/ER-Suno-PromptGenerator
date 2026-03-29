@@ -10,8 +10,6 @@ on:
           - nightly
           - beta
           - stable
-  schedule:
-    - cron: '0 2 * * 1-5'  # Weekdays at 02:00 UTC for nightly
 
 env:
   REGISTRY: ghcr.io

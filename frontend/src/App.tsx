@@ -35,6 +35,12 @@ const SparklesIcon = () => (
     </svg>
 );
 
+const BookIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+    </svg>
+);
+
 const GENRES = [
     'Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic',
     'Indie', 'Alternative', 'Folk', 'Soul', 'Funk', 'Blues', 'Reggae', 'Punk', 'Disco', 'House', 'Techno',
@@ -49,6 +55,11 @@ const STYLES = [
     'Upbeat', 'Energetic', 'Slow', 'Emotional', 'Aggressive', 'Melancholic', 'Atmospheric', 'Epic', 'Dark',
     'Happy', 'Sad', 'Chill', 'Ambient', 'Fast', 'Heavy', 'Driving', 'Groovy', 'Soothing', 'Dreamy', 'Intense',
     'Romantic', 'Mysterious', 'Euphoric', 'Uplifting', 'Nostalgic', 'Funky', 'Raw', 'Polished'
+];
+const VOCAL_STYLES = [
+    'False Cord Growls', 'Diaphragmatic Gutturals', 'Oesophageal Grunts', 'Tunnel Throat', 
+    'Inhaled Pig Squeals', 'Monotone', 'Atonal', 'Harsh Rasp', 'Low Formant', 'Guttural Growl',
+    'Guttural Punch', '(blegh!)'
 ];
 const BPMS = ['80 BPM', '100 BPM', '120 BPM', '140 BPM', '160 BPM', '180 BPM', '200 BPM'];
 const TAGS = [
@@ -85,6 +96,25 @@ const HELP_DATA: Record<string, HelpTopic> = {
         url: "https://help.suno.com/",
         examples: [
             { title: "Sentence-based Style Example (Nu-disco)", template: "Nu-disco and synth-pop track at 120 BPM in the key of G minor. A syncopated, plucked synth bassline drives the rhythm alongside a standard electronic drum kit featuring a crisp snare and consistent hi-hat eighth notes. A bright, rhythmic electric guitar performs muted 16th-note scratches and staccato chords. Polished synth pads provide harmonic backing with occasional filter sweeps. A recurring lead synth melody uses a square wave tone with a short decay. The arrangement features distinct sections marked by the entry and exit of a high-frequency shaker and cowbell accents. The mix is clean with moderate compression on the master bus and subtle stereo widening on the synth layers." }
+        ]
+    },
+    gutturals: {
+        title: "Guttural & Harsh Vocals Guide",
+        description: "To achieve realistic Death Metal or Deathcore growls without them sounding like a cartoon character, describe the physics of the sound. Use tags like 'Monotone' or 'Atonal' in your style to stop the AI from trying to hit melodic notes. For Suno V5, crank the 'Weirdness' slider to 60-75% so inhuman vocal textures aren't filtered out as noise. Use explicitly bracketed instructions per section.",
+        url: "https://help.suno.com/",
+        communityUrl: "https://www.cometapi.com/de/how-to-use-suno-to-generate-guttural-vocals/",
+        examples: [
+            { title: "Style Prompt Base", template: "Brutal Death Metal, False Cord Growls, Monotone, aggressive articulation, wet close mic, saturated preamp" },
+            { title: "Lyrics Blueprint", template: "[Verse - guttural growl, low formant, aggressive rasp]\nBeneath the ash we crawl, the silence claws my name.\n\n[Chorus - shout + backing growl]\nWe feed the dark, we break the bone.\n(lead: guttural growl; backing: low harmonic drone)" }
+        ]
+    },
+    metal_epos: {
+        title: "Building a 10-Minute Metal Epic",
+        description: "For long epics, don't rely on a single prompt. Use the Suno Studio Multitrack Editor to build the song in 2-minute segments via Re-Triggering. Start with a mid-tempo groove, extend the track using a new slower style prompt for the breakdown, and layer symphonic elements using the 'Add Instrumentals' feature. For rhythmic vocal precision, use ALL CAPS and punctuation (periods) to force the AI to 'punch' each syllable.",
+        url: "https://help.suno.com/",
+        communityUrl: "https://www.cometapi.com/de/how-to-use-suno-to-generate-guttural-vocals/",
+        examples: [
+            { title: "Rhythmic Precision Format", template: "[Guttural Punch]\nDE-VOURED. BY. THE. VOID.\n(blegh!)" }
         ]
     },
     bpm: {
@@ -136,6 +166,17 @@ const TOOLTIPS: Record<string, string> = {
     'Funky': 'Syncopated, bass-forward, and bouncy.',
     'Raw': 'Unpolished, authentic, and gritty.',
     'Polished': 'Clean, highly produced, and perfect.',
+
+    // Vocal Techniques
+    'False Cord Growls': 'Produces a deep, cavernous resonance common in Death Metal.',
+    'Diaphragmatic Gutturals': 'Powerful, sustained low frequencies and breath support.',
+    'Oesophageal Grunts': 'Animalistic, wet, and raw vocal textures.',
+    'Tunnel Throat': 'Specific hollow sound popularized in modern Deathcore.',
+    'Inhaled Pig Squeals': 'High-frequency, intense "bree" sounds.',
+    'Monotone': 'Crucial for gutturals. Prevents the AI from applying melodic pitches to growls.',
+    'Atonal': 'Removes pitch mapping, prioritizing harmonic noise/percussive vocals.',
+    'Guttural Punch': 'Instruction for sudden, heavy percussive vocal delivery.',
+    '(blegh!)': 'Classic metalcore vocalization / expression of disgust.',
 
     // Tags
     '[Intro]': 'The opening section of the song before the main vocals.',
@@ -482,6 +523,17 @@ function App() {
 
                 <div className="selection-section">
                     <div className="section-header">
+                        <h3>Vocal Techniques / Gutturals</h3>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button className="help-icon" onClick={() => setActiveHelp('gutturals')} title="How to write harsh metal vocals?">?</button>
+                            <button className="help-icon" style={{ borderColor: '#ff003c', color: '#ff003c' }} onClick={() => setActiveHelp('metal_epos')} title="Building a Metal Epic"><BookIcon /></button>
+                        </div>
+                    </div>
+                    {renderChips(VOCAL_STYLES, selectedStyles, handleStyleClick, 'vocal_styles')}
+                </div>
+
+                <div className="selection-section">
+                    <div className="section-header">
                         <h3>Select BPM (Tempo)</h3>
                         <button className="help-icon" onClick={() => setActiveHelp('bpm')} title="What is BPM?">?</button>
                     </div>
@@ -514,6 +566,14 @@ function App() {
                         }}
                     >
                         Instrumental Template
+                    </button>
+                    <button
+                        className="generate-btn guttural-btn"
+                        onClick={() => {
+                            setText('[Verse - guttural growl, low formant, aggressive rasp]\nBeneath the ash we crawl...\n\n[Chorus - shout + backing growl]\nWe feed the dark...\n(lead: guttural growl; backing: low harmonic drone)');
+                        }}
+                    >
+                        Guttural Template
                     </button>
                 </div>
                 {result && (

@@ -309,6 +309,12 @@ pre {
   box-shadow: 4px 4px 0px #ff00ff;
 }
 
+.guttural-btn {
+  background: #ff003c;
+  color: #fff;
+  box-shadow: 4px 4px 0px #0cebeb;
+}
+
 /* Help Icons & Modals */
 .section-header {
   display: flex;
