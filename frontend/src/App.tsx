@@ -29,6 +29,12 @@ const CheckIcon = () => (
     </svg>
 );
 
+const SparklesIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '8px', marginBottom: '2px' }}>
+        <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
+    </svg>
+);
+
 const GENRES = [
     'Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Jazz', 'Classical', 'R&B', 'Country', 'Lo-Fi', 'EDM', 'Acoustic',
     'Indie', 'Alternative', 'Folk', 'Soul', 'Funk', 'Blues', 'Reggae', 'Punk', 'Disco', 'House', 'Techno',
@@ -46,7 +52,7 @@ const STYLES = [
 ];
 const BPMS = ['80 BPM', '100 BPM', '120 BPM', '140 BPM', '160 BPM', '180 BPM', '200 BPM'];
 const TAGS = [
-    '[Intro]', '[Verse]', '[Pre-Chorus]', '[Chorus]', '[Bridge]', '[Guitar Solo]', '[Drop]', '[Build-up]',
+    '[Intro]', '[Verse]', '[Pre-Chorus]', '[Chorus]', '[Bridge]', '[Main Theme]', '[Guitar Solo]', '[Drop]', '[Build-up]',
     '[Breakdown]', '[Outro]', '[Fast Tempo]', '[Slow Tempo]', '[Upbeat]', '[Acoustic]', '[Epic]', '[Intimate]',
     '[Female Vocals]', '[Male Vocals]', '[Instrumental]', '[Bass Drop]', '[Beat Drop]', '[Vocalization]',
     '[Choir]', '[Orchestral]', '[Synth Solo]', '[Drum Fill]', '[Fade Out]', '[Acapella]', '[End]'
@@ -75,8 +81,11 @@ const HELP_DATA: Record<string, HelpTopic> = {
     },
     styles: {
         title: "Styles (Tone & Vibe)",
-        description: "Styles act as adjectives to shape the mood, feeling, and energy of the chosen genres. Select tones like 'Emotional', 'Aggressive', or 'Upbeat' to guide the vibe of your song without necessarily switching genres.",
-        url: "https://help.suno.com/"
+        description: "Styles act as adjectives to shape the mood, feeling, and energy of the chosen genres. You can use chips or write full sentences to guide Suno.",
+        url: "https://help.suno.com/",
+        examples: [
+            { title: "Sentence-based Style Example (Nu-disco)", template: "Nu-disco and synth-pop track at 120 BPM in the key of G minor. A syncopated, plucked synth bassline drives the rhythm alongside a standard electronic drum kit featuring a crisp snare and consistent hi-hat eighth notes. A bright, rhythmic electric guitar performs muted 16th-note scratches and staccato chords. Polished synth pads provide harmonic backing with occasional filter sweeps. A recurring lead synth melody uses a square wave tone with a short decay. The arrangement features distinct sections marked by the entry and exit of a high-frequency shaker and cowbell accents. The mix is clean with moderate compression on the master bus and subtle stereo widening on the synth layers." }
+        ]
     },
     bpm: {
         title: "BPM (Beats Per Minute)",
@@ -91,7 +100,8 @@ const HELP_DATA: Record<string, HelpTopic> = {
         tutorialUrl: "https://sunometatagcreator.com/metatags-guide",
         examples: [
             { title: "Standard Pop Structure", template: "[Intro]\n(Instrumental build up)\n\n[Verse 1]\nWalking down the neon street...\n\n[Pre-Chorus]\nAnd I feel it coming...\n\n[Chorus]\nElectric love in the night!\n\n[Outro]\n(Fading synths)" },
-            { title: "EDM Drop Structure", template: "[Intro]\nAtmospheric pads\n\n[Build-up]\nFaster drums, rising tension\n\n[Drop]\nHeavy bassline, energetic\n[Fast Tempo]" }
+            { title: "EDM Drop Structure", template: "[Intro]\nAtmospheric pads\n\n[Build-up]\nFaster drums, rising tension\n\n[Drop]\nHeavy bassline, energetic\n[Fast Tempo]" },
+            { title: "Instrumental Detailed Setup", template: "[Instrumental]\n\n[Intro]\n[electronic drums enter]\n\n[Main Theme]\n[synth melody, cowbells]\n\n[Breakdown]\n[drums continue, filter sweep]\n\n[Outro]\n[synth melody fades out]" }
         ]
     }
 };
@@ -133,6 +143,7 @@ const TOOLTIPS: Record<string, string> = {
     '[Pre-Chorus]': 'Builds tension and transitions from the verse to the chorus.',
     '[Chorus]': 'The memorable, repeating core message and melody of the song.',
     '[Bridge]': 'A contrasting section to introduce new musical ideas, often near the end.',
+    '[Main Theme]': 'The primary, recurring instrumental melody or groove of the track.',
     '[Guitar Solo]': 'An instrumental section featuring a lead guitar.',
     '[Drop]': 'The climax of an electronic track, featuring heavy bass and beats.',
     '[Build-up]': 'A section of rising tension and increasing speed, usually before a drop.',
@@ -165,6 +176,8 @@ function App() {
     const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
     const [selectedBpms, setSelectedBpms] = useState<string[]>([]);
     const [genreFilter, setGenreFilter] = useState('');
+    const [customStyle, setCustomStyle] = useState('');
+    const [advancedStyleMode, setAdvancedStyleMode] = useState(false);
     const [result, setResult] = useState<PromptResponse | null>(null);
     const [activeHelp, setActiveHelp] = useState<string | null>(null);
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -239,6 +252,56 @@ function App() {
         }
     };
 
+    const handleGenerateStyleDescription = () => {
+        const genreText = selectedGenres.length > 0 ? selectedGenres.join(' and ') : 'modern';
+        const styleText = selectedStyles.length > 0 ? selectedStyles.join(', ') : 'dynamic';
+        const bpmText = selectedBpms.length > 0 ? ` at ${selectedBpms[0]}` : '';
+
+        const keys = ['C minor', 'G minor', 'D minor', 'A minor', 'E minor', 'F major', 'E major', 'D major'];
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+
+        let instruments = "a standard rhythm section and melodic leads";
+        const genreLower = genreText.toLowerCase();
+
+        if (genreLower.includes('metal') || genreLower.includes('rock') || genreLower.includes('punk')) {
+            instruments = "distorted electric guitars, driving basslines, and heavy drumming";
+        } else if (genreLower.includes('electronic') || genreLower.includes('techno') || genreLower.includes('house') || genreLower.includes('edm') || genreLower.includes('trance')) {
+            instruments = "pulsing synthesizers, deep bass frequencies, and electronic drum machines";
+        } else if (genreLower.includes('acoustic') || genreLower.includes('folk') || genreLower.includes('country') || genreLower.includes('indie')) {
+            instruments = "acoustic guitars, organic percussion, and warm bass tones";
+        } else if (genreLower.includes('hip-hop') || genreLower.includes('trap') || genreLower.includes('r&b')) {
+            instruments = "heavy 808 bass, crisp hi-hats, and rhythmic sampling";
+        } else if (genreLower.includes('jazz') || genreLower.includes('blues') || genreLower.includes('soul') || genreLower.includes('funk')) {
+            instruments = "syncopated drums, brass accents, and expressive basslines";
+        } else if (genreLower.includes('classical') || genreLower.includes('orchestral') || genreLower.includes('symphonic')) {
+            instruments = "lush string sections, dramatic brass, and soaring woodwinds";
+        } else if (genreLower.includes('pop')) {
+            instruments = "catchy synth hooks, driving drum beats, and polished bass";
+        }
+
+        const arrangements = [
+            "The arrangement builds naturally, layering elements to create constant momentum.",
+            "It features structured sections with clear dynamic shifts.",
+            "The track focuses on a central groove, adding and removing layers over time.",
+            "A steady rhythmic foundation supports evolving melodic themes."
+        ];
+        const randomArrangement = arrangements[Math.floor(Math.random() * arrangements.length)];
+
+        const mixes = [
+            "The mix is pristine, featuring tight low-end and wide stereo separation.",
+            "It has a spacious production style with lush reverb and deliberate panning.",
+            "The production emphasizes a punchy, aggressive tone with saturated master dynamics.",
+            "A warm and organic mix that highlights the natural character of the instrumentation."
+        ];
+        const randomMix = mixes[Math.floor(Math.random() * mixes.length)];
+
+        // Handle grammatical formatting if no selections made
+        const prefix = selectedStyles.length > 0 ? `A ${styleText}` : `A`;
+        const description = `${prefix} ${genreText} track${bpmText} in the key of ${randomKey}. The instrumentation is driven by ${instruments}. ${randomArrangement} ${randomMix}`;
+
+        setCustomStyle(description);
+    };
+
     const toggleBpm = (bpm: string) => {
         setSelectedBpms((prev) =>
             prev.includes(bpm) ? prev.filter((b) => b !== bpm) : [...prev, bpm]
@@ -281,6 +344,9 @@ function App() {
             // To achieve "Genre -> Styles -> Tempo" ordering, 
             // since backend does: combined_tags = genres + styles
             const mergedStylesAndBpms = [...selectedStyles, ...selectedBpms];
+            if (customStyle.trim()) {
+                mergedStylesAndBpms.push(customStyle.trim());
+            }
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -390,7 +456,27 @@ function App() {
                     <div className="section-header">
                         <h3>Select Styles (Tone/Vibe)</h3>
                         <button className="help-icon" onClick={() => setActiveHelp('styles')} title="What are Styles?">?</button>
+                        <button className="toggle-advanced-btn" onClick={() => setAdvancedStyleMode(!advancedStyleMode)}>
+                            {advancedStyleMode ? 'Hide Advanced Mode' : 'Advanced Sentence Mode'}
+                        </button>
                     </div>
+                    {advancedStyleMode && (
+                        <div className="advanced-style-container">
+                            <textarea
+                                placeholder="Describe your style as a proper sentence... e.g. 'Nu-disco and synth-pop track at 120 BPM in the key of G minor.'"
+                                value={customStyle}
+                                onChange={(e) => setCustomStyle(e.target.value)}
+                                rows={3}
+                                className="advanced-style-textarea"
+                            />
+                            <div className="advanced-actions">
+                                <button className="auto-generate-btn" onClick={handleGenerateStyleDescription}>
+                                    <SparklesIcon /> Auto-Generate Description
+                                </button>
+                            </div>
+                            <p className="advanced-hint">Write a complete descriptive text outlining instruments, melody, and overall arrangement. It will be combined with your chips above.</p>
+                        </div>
+                    )}
                     {renderChips(STYLES, selectedStyles, handleStyleClick, 'styles')}
                 </div>
 
@@ -424,10 +510,10 @@ function App() {
                     <button
                         className="generate-btn instrumental-btn"
                         onClick={() => {
-                            setText('[Instrumental]');
+                            setText('[Instrumental]\n\n[Intro]\n\n\n[Main Theme]\n\n\n[Breakdown]\n\n\n[Outro]\n');
                         }}
                     >
-                        [Instrumental] Only
+                        Instrumental Template
                     </button>
                 </div>
                 {result && (
