@@ -139,6 +139,7 @@ const HELP_DATA: Record<string, HelpTopic> = {
         title: "Artist-Inspired Style Library (Non-Imitative Use)",
         description: "Artists are used only as style references. The generated prompts avoid using the artist's name and synthesize their known genres, tools, eras, and moods into generic descriptive language. This results in original, non-derivative output that complies with AI music platform guidelines.",
         url: "https://help.suno.com/",
+        tutorialUrl: "https://travisnicholson.medium.com/complete-list-of-prompts-styles-for-suno-ai-music-2024-33ecee85f180",
         examples: [
             { title: "Drake", template: "hip-hop and trap with laid-back, ambient beats, modern, introspective, male delivery, and chill and nocturnal mood" }
         ]
