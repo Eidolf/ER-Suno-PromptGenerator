@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import './App.css';
+import { ARTIST_LIBRARY } from './artists';
 
 interface PromptResponse {
     genres: string;
@@ -133,6 +134,14 @@ const HELP_DATA: Record<string, HelpTopic> = {
             { title: "EDM Drop Structure", template: "[Intro]\nAtmospheric pads\n\n[Build-up]\nFaster drums, rising tension\n\n[Drop]\nHeavy bassline, energetic\n[Fast Tempo]" },
             { title: "Instrumental Detailed Setup", template: "[Instrumental]\n\n[Intro]\n[electronic drums enter]\n\n[Main Theme]\n[synth melody, cowbells]\n\n[Breakdown]\n[drums continue, filter sweep]\n\n[Outro]\n[synth melody fades out]" }
         ]
+    },
+    artists: {
+        title: "Artist-Inspired Style Library (Non-Imitative Use)",
+        description: "Artists are used only as style references. The generated prompts avoid using the artist's name and synthesize their known genres, tools, eras, and moods into generic descriptive language. This results in original, non-derivative output that complies with AI music platform guidelines.",
+        url: "https://help.suno.com/",
+        examples: [
+            { title: "Drake", template: "hip-hop and trap with laid-back, ambient beats, modern, introspective, male delivery, and chill and nocturnal mood" }
+        ]
     }
 };
 
@@ -219,6 +228,8 @@ function App() {
     const [genreFilter, setGenreFilter] = useState('');
     const [customStyle, setCustomStyle] = useState('');
     const [advancedStyleMode, setAdvancedStyleMode] = useState(false);
+    const [selectedArtists, setSelectedArtists] = useState<string[]>([]);
+    const [disabledArtistTags, setDisabledArtistTags] = useState<string[]>([]);
     const [result, setResult] = useState<PromptResponse | null>(null);
     const [activeHelp, setActiveHelp] = useState<string | null>(null);
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -234,6 +245,66 @@ function App() {
     const toggleStyle = (style: string) => {
         setSelectedStyles((prev) =>
             prev.includes(style) ? prev.filter((s) => s !== style) : [...prev, style]
+        );
+    };
+
+    const toggleArtist = (artistName: string) => {
+        setSelectedArtists((prev) =>
+            prev.includes(artistName) ? prev.filter((a) => a !== artistName) : [...prev, artistName]
+        );
+    };
+
+    type ArtistTagInfo = { id: string; type: 'era'|'genre'|'tag'|'vocal'|'mood'; value: string; };
+
+    const getDerivedTags = (): ArtistTagInfo[] => {
+        if (selectedArtists.length === 0) return [];
+        const artists = ARTIST_LIBRARY.filter(a => selectedArtists.includes(a.artistName));
+        const allTags: ArtistTagInfo[] = [];
+
+        const addTag = (type: ArtistTagInfo['type'], value: string) => {
+            const id = `${type}-${value}`;
+            if (!allTags.find(t => t.id === id) && value) {
+                allTags.push({ id, type, value });
+            }
+        };
+
+        artists.forEach(a => {
+            if (a.eraFlavor) addTag('era', a.eraFlavor);
+            a.primaryGenres.forEach(g => addTag('genre', g));
+            a.styleTags.forEach(t => addTag('tag', t));
+            addTag('vocal', a.vocalType);
+            a.moodEnergy.split(',').forEach(m => addTag('mood', m.trim()));
+        });
+        return allTags;
+    };
+
+    const computeArtistDescription = () => {
+        const activeDerivedTags = getDerivedTags().filter(t => !disabledArtistTags.includes(t.id));
+        const eras = activeDerivedTags.filter(t => t.type === 'era').map(t => t.value);
+        const genres = activeDerivedTags.filter(t => t.type === 'genre').map(t => t.value.toLowerCase());
+        const tags = activeDerivedTags.filter(t => t.type === 'tag').map(t => t.value);
+        const vocals = activeDerivedTags.filter(t => t.type === 'vocal').map(t => t.value.toLowerCase());
+        const moods = activeDerivedTags.filter(t => t.type === 'mood').map(t => t.value.toLowerCase());
+
+        let desc = "";
+        if (eras.length > 0) desc += eras.join(" and ") + " ";
+        desc += genres.length > 0 ? genres.join(" and ") : "music";
+        
+        const withElements = [];
+        if (tags.length > 0) withElements.push(tags.join(", "));
+        if (vocals.length > 0) withElements.push(`${vocals.join('/')} delivery`);
+        if (moods.length > 0) withElements.push(`${moods.join(' and ')} mood`);
+
+        if (withElements.length > 0) {
+            desc += " with " + withElements.join(", and ");
+        }
+        
+        return desc;
+    };
+
+    const toggleArtistTag = (id: string) => {
+        setDisabledArtistTags(prev => 
+            prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
         );
     };
 
@@ -389,6 +460,11 @@ function App() {
                 mergedStylesAndBpms.push(customStyle.trim());
             }
 
+            const artistDesc = computeArtistDescription();
+            if (artistDesc) {
+                mergedStylesAndBpms.push(artistDesc);
+            }
+
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -475,6 +551,43 @@ function App() {
                         value={genreFilter}
                         onChange={(e) => setGenreFilter(e.target.value)}
                     />
+                </div>
+
+                <div className="selection-section">
+                    <div className="section-header">
+                        <h3>Select Artist Inspirations</h3>
+                        <button className="help-icon" onClick={() => setActiveHelp('artists')} title="How do Artists work?">?</button>
+                    </div>
+                    <div className="chip-container">
+                        {ARTIST_LIBRARY.map(artist => (
+                            <button
+                                key={artist.artistName}
+                                className={`chip ${selectedArtists.includes(artist.artistName) ? 'active' : ''}`}
+                                onClick={() => toggleArtist(artist.artistName)}
+                                title={`Toggle ${artist.artistName}`}
+                            >
+                                {artist.artistName}
+                            </button>
+                        ))}
+                    </div>
+                    {selectedArtists.length > 0 && (
+                        <div className="artist-preview" style={{marginTop: '12px', padding: '12px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', background: 'rgba(255,255,255,0.03)'}}>
+                            <h4 style={{marginBottom: '8px'}}>Extracted Descriptors (Click to toggle)</h4>
+                            <div className="chip-container">
+                                {getDerivedTags().map(tag => (
+                                   <button 
+                                       key={tag.id}
+                                       className={`chip tag-chip ${!disabledArtistTags.includes(tag.id) ? 'active' : ''}`}
+                                       onClick={() => toggleArtistTag(tag.id)}
+                                   >
+                                       {tag.value}
+                                   </button>
+                                ))}
+                            </div>
+                            <h4 style={{marginTop: '12px', marginBottom: '8px'}}>Final Prompt Text</h4>
+                            <p className="artist-preview-text" style={{fontStyle: 'italic', padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', margin: 0}}>{computeArtistDescription()}</p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="selection-section">
