@@ -559,18 +559,7 @@ function App() {
                         <h3>Select Artist Inspirations</h3>
                         <button className="help-icon" onClick={() => setActiveHelp('artists')} title="How do Artists work?">?</button>
                     </div>
-                    <div className="chip-container">
-                        {ARTIST_LIBRARY.map(artist => (
-                            <button
-                                key={artist.artistName}
-                                className={`chip ${selectedArtists.includes(artist.artistName) ? 'active' : ''}`}
-                                onClick={() => toggleArtist(artist.artistName)}
-                                title={`Toggle ${artist.artistName}`}
-                            >
-                                {artist.artistName}
-                            </button>
-                        ))}
-                    </div>
+                    {renderChips(ARTIST_LIBRARY.map(a => a.artistName), selectedArtists, toggleArtist, 'artists')}
                     {selectedArtists.length > 0 && (
                         <div className="artist-preview" style={{marginTop: '12px', padding: '12px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', background: 'rgba(255,255,255,0.03)'}}>
                             <h4 style={{marginBottom: '8px'}}>Extracted Descriptors (Click to toggle)</h4>
