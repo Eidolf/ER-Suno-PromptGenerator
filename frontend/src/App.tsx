@@ -125,14 +125,15 @@ const HELP_DATA: Record<string, HelpTopic> = {
     },
     tags: {
         title: "Structure Tags",
-        description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. Use descriptors like [Fast Tempo] for momentary changes.",
+        description: "Metatags like [Verse], [Chorus], or [Drop] tell Suno's AI how to structure the song flow. Place them on their own line directly above the lyrics they should influence. For advanced vocal control, you can use the syntax [Section - Tone (Voice) | Style, Style] (e.g. [Verse 1 - Aggressive (Male) | harsh, rhythmic]).",
         url: "https://help.suno.com/",
         communityUrl: "https://sunoaiwiki.com/resources/2024-05-13-list-of-metatags/",
         tutorialUrl: "https://sunometatagcreator.com/metatags-guide",
         examples: [
             { title: "Standard Pop Structure", template: "[Intro]\n(Instrumental build up)\n\n[Verse 1]\nWalking down the neon street...\n\n[Pre-Chorus]\nAnd I feel it coming...\n\n[Chorus]\nElectric love in the night!\n\n[Outro]\n(Fading synths)" },
             { title: "EDM Drop Structure", template: "[Intro]\nAtmospheric pads\n\n[Build-up]\nFaster drums, rising tension\n\n[Drop]\nHeavy bassline, energetic\n[Fast Tempo]" },
-            { title: "Instrumental Detailed Setup", template: "[Instrumental]\n\n[Intro]\n[electronic drums enter]\n\n[Main Theme]\n[synth melody, cowbells]\n\n[Breakdown]\n[drums continue, filter sweep]\n\n[Outro]\n[synth melody fades out]" }
+            { title: "Instrumental Detailed Setup", template: "[Instrumental]\n\n[Intro]\n[electronic drums enter]\n\n[Main Theme]\n[synth melody, cowbells]\n\n[Breakdown]\n[drums continue, filter sweep]\n\n[Outro]\n[synth melody fades out]" },
+            { title: "Advanced Dynamic Vocals (Metal/Electro)", template: "[Verse 1 - Aggressive (Male) | harsh, rhythmic]\n(First verse lyrics here...)\n\n[Pre-Chorus - Ethereal (Female) | atmospheric, building]\n(Building up...)\n\n[Chorus - Both | explosive, heavy, anthemic]\n(Huge chorus...)\n\n[Outro - soft, atmospheric fade]" }
         ]
     },
     artists: {
@@ -338,15 +339,24 @@ function App() {
             const tagStartIdx = lastOpenBracket;
             const tagEndIdx = start + nextCloseBracket;
             const tagContent = text.substring(tagStartIdx + 1, tagEndIdx);
+            const cleanTag = tagContent.trim();
+            const lowerStyle = style.toLowerCase();
 
             let newTagContent = "";
-            if (tagContent.includes(' - ')) {
-                // Already has a modifier section
-                const cleanTag = tagContent.trim();
-                newTagContent = cleanTag.endsWith(',') ? `${cleanTag} ${style.toLowerCase()}` : `${cleanTag}, ${style.toLowerCase()}`;
+            if (cleanTag.includes(' | ')) {
+                const parts = cleanTag.split(' | ');
+                const beforePipe = parts[0].trim();
+                const afterPipe = parts[1].trim();
+                newTagContent = afterPipe.endsWith(',') ? `${beforePipe} | ${afterPipe} ${lowerStyle}` : `${beforePipe} | ${afterPipe}, ${lowerStyle}`;
+            } else if (cleanTag.includes('(') && cleanTag.includes(')')) {
+                // If it already has a vocal definition, start the pipe block
+                newTagContent = `${cleanTag} | ${lowerStyle}`;
+            } else if (cleanTag.includes(' - ')) {
+                // Legacy modifier
+                newTagContent = cleanTag.endsWith(',') ? `${cleanTag} ${lowerStyle}` : `${cleanTag}, ${lowerStyle}`;
             } else {
-                // First modifier
-                newTagContent = `${tagContent.trim()} - ${style.toLowerCase()}`;
+                // Add legacy modifier dash
+                newTagContent = `${cleanTag} - ${lowerStyle}`;
             }
 
             const newText = text.substring(0, tagStartIdx + 1) + newTagContent + text.substring(tagEndIdx);
@@ -659,7 +669,6 @@ function App() {
                     rows={12}
                     cols={50}
                 />
-                <br />
                 <div className="button-group">
                     <button className="generate-btn" onClick={handleGenerate}>Generate Prompt</button>
                     <button
@@ -677,6 +686,15 @@ function App() {
                         }}
                     >
                         Guttural Template
+                    </button>
+                    <button
+                        className="generate-btn"
+                        style={{ backgroundColor: '#2d3748', border: '1px solid #4a5568' }}
+                        onClick={() => {
+                            setText('[Verse 1 - Aggressive (Male) | harsh, rhythmic, driving]\n(First verse lyrics here...)\n\n[Pre-Chorus - Ethereal (Female) | atmospheric, building]\n(Building up tension...)\n\n[Chorus - Both | explosive, heavy, anthemic]\n(Huge impactful chorus...)\n\n[Outro - soft, atmospheric fade]\n(Fading out...)');
+                        }}
+                    >
+                        Dynamic Vocal / Duet Template
                     </button>
                 </div>
                 {result && (
